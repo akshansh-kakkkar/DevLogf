@@ -4,6 +4,7 @@ import { url } from "inspector";
 import { babelIncludeRegexes } from "next/dist/build/webpack-config";
 import { NextResponse } from "next/server";
 import { title } from 'process';
+import { stat } from 'fs';
 export async function GET(request : Request) {
 
     
@@ -100,6 +101,11 @@ export async function POST(request : Request) {
         }
         post.push(newPost);
         return NextResponse.json({newPost}, {status:201})
+        const postWithAuthor = { 
+            ...newPost,
+            author: author,
+        }
+        return NextResponse.json(postWithAuthor, {status:201})
     }
     catch(error){
        return NextResponse.json({error : "Something went wrong"}, {status : 400})
