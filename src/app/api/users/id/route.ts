@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { users, post, comment } from "@/app/data/mockData";
+import { users, post, comment,  } from '@/app/data/mockData';
 
 import { error } from "console";
+import { stat } from "fs";
 export async function GET(
   request: Request,
   { params }: { params: { id: string } },
@@ -57,3 +58,21 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(request:Request, {params} : {params : {id : string}}) {
+    const userId = parseInt(params.id);
+    if(isNaN(userId)){
+        return NextResponse.json({error : "Invalid User Id"}, {status : 400})
+    }
+    const userIndex = users.findIndex(U => U.id === userId);
+    if(userIndex === -1){
+       return NextResponse.json( {error : "User not found"},
+        {status : 404})
+    }
+    const deleteUser = users.splice(userIndex,1)[0];
+    return NextResponse.json({
+        message : "User delted successfully",
+        user : deleteUser
+    })
+}
+
