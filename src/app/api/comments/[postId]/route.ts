@@ -1,7 +1,5 @@
 import { comment, post, users } from "@/app/data/mockData";
-import { error } from "console";
 import { NextResponse } from "next/server";
-import { stat } from 'fs';
 
 export async function GET(request : Request, {params}:{params :{postId :string}}){
     await new Promise(resolve => setTimeout(resolve, 4000));

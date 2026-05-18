@@ -6,6 +6,7 @@ export interface Post {
     author?: User;
     createdAt: string;
     updatedAt: string;
+    image : string;
 }
 
 export interface User {

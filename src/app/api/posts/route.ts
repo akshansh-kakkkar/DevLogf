@@ -1,13 +1,8 @@
 import {post, users, comment} from "@/app/data/mockData";
-import { error } from "console";
-import { url } from "inspector";
-import { babelIncludeRegexes } from "next/dist/build/webpack-config";
 import { NextResponse } from "next/server";
-import { title } from 'process';
-import { stat } from 'fs';
-export async function GET(request : Request) {
 
-    
+
+export async function GET(request : Request) {
     await new Promise(resolve => setTimeout(resolve,1000))
     const url = new URL(request.url)
     const authorId = url.searchParams.get('authorId');
@@ -62,7 +57,7 @@ export async function GET(request : Request) {
             return aValue < bValue  ? 1 : -1;
         }
     })
-    const startIndex = (page -1)+limit;
+    const startIndex = (page -1)*limit;
     const endIndex = startIndex + limit;
     const paginatedPosts = sortedPosts.slice(startIndex, endIndex);
     const totalPages = Math.ceil(sortedPosts.length/limit);
@@ -98,6 +93,7 @@ export async function POST(request : Request) {
             authorId:body.authorId,
             createdAt : new Date().toISOString(),
             updatedAt : new Date().toISOString(),
+            image : body.content
         }
         post.push(newPost);
         return NextResponse.json({newPost}, {status:201})
