@@ -10,14 +10,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full antialiased`}>
-      <body className="min-h-screen flex flex-col">
+      <body className="flex flex-col">
+        
         <div className="flex-1 min-h-screen">
         <Navbar />
         <main >
         {children}
         </main>
-        </div>
         <Footer />
+        </div>
+        
       </body>
     </html>
   );

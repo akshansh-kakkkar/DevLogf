@@ -68,7 +68,7 @@ export default function Navbar() {
           <input
             type="text"
             placeholder="search..."
-            className="border-[#C6C6CD]  py-2 px-5 outline-[#45464D] text-lg rounded-lg border-2 pl-10 pr-2 bg-[#F2F4F6] placeholder:text-[#aeaeb9]"
+            className="border-[#C6C6CD]  py-2 px-5 outline-[#45464D] text-lg rounded-md border-2 pl-10 pr-2 bg-[#F2F4F6] placeholder:text-[#aeaeb9]"
           />
         </div>
         <motion.div
