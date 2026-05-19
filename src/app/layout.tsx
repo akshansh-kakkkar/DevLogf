@@ -10,12 +10,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full antialiased`}>
-      <body className="min-h-screen bg-[#F7F9FB] flex flex-col">
-
+      <body className="min-h-screen flex flex-col">
+        <div className="flex-1 min-h-screen">
         <Navbar />
-        <main className="flex-1">
+        <main >
         {children}
         </main>
+        </div>
         <Footer />
       </body>
     </html>
