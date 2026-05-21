@@ -3,10 +3,11 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
   await new Promise((resolve) => setTimeout(resolve, 4000));
-  const postId = parseInt(params.postId);
+  const { postId: postIdStr } = await params;
+  const postId = parseInt(postIdStr);
   if (isNaN(postId)) {
     return NextResponse.json({ error: "Not Found" }, { status: 400 });
   }
@@ -38,10 +39,11 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
   try {
-    const postId = parseInt(params.postId);
+    const { postId: postIdStr } = await params;
+    const postId = parseInt(postIdStr);
     if (isNaN(postId)) {
       return NextResponse.json({ error: "Invalid Post" }, { status: 400 });
     }

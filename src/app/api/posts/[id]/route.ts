@@ -45,10 +45,11 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const postId = parseInt(params.id);
+    const { id } = await params;
+    const postId = parseInt(id);
     if (isNaN(postId)) {
       return NextResponse.json({ error: "Id invalid" }, { status: 400 });
     }
@@ -81,9 +82,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const postId = parseInt(params.id);
+  const { id } = await params;
+  const postId = parseInt(id);
   if (isNaN(postId)) {
     return NextResponse.json(
       {
