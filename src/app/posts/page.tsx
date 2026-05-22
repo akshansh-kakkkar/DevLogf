@@ -13,12 +13,16 @@ const LibreSans = Libertinus_Sans({
 })
 export default async function PostPage(){
     const data = await getPosts();
+
     return(
         <div className='flex flex-col justify-center h-screen items-center'>
+        
             <h1 className={`${LibreSans.className} text-4xl p-5`}>Posts</h1>
             <div className='flex gap-22 items-center h-full w-full justify-center '>
-               
-                {data.post.map((post:any)=>(
+               {data.posts.length === 0 ? (
+                <div className={`text-4xl font-semibold`}>No posts found</div>
+               ) : (
+                data.post?.map((post:any)=>(
                      <Link key={post.id} href={`/posts/${post.id}`}>
                     <div  className='bg-gray-300 w-[400px] rounded-md p-4 h-[400px] gap-12  '>
                         <Image width={400} height={200} src={post.image} alt={post.title} />
@@ -26,7 +30,8 @@ export default async function PostPage(){
                         <div>{post.author?.name}</div>
                     </div>
                     </Link>
-                ))}
+                ))
+                )}
             </div>
         </div>
     )
