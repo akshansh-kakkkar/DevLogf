@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -11,112 +12,148 @@ export async function GET(
       return NextResponse.json({ error: "Invalid user Id" }, { status: 400 });
     }
     const user = await prisma.user.findUnique({
-      where : {
-        id : userId
+      where: {
+        id: userId,
       },
-      include : {
-        posts : {
-          include : {
-            comments : true,
-            likes : true
-          }
-        },
-        comments : {
-          include : {
-            post : true
-          }
-        },
-        likes : {
-          include : {
-            post : true
-          }
-        },
-      }
-    })
-    if(!user){
-      return NextResponse.json({
-        error : "User not found",
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        posts: {
+          select: {
+            id: true,
+            title: true,
+            image: true,
+            createdAt: true,
 
-      }, 
+            _count: {
+              select: {
+                comments: true,
+                likes: true,
+              },
+            },
+          },
+        },
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
 
-    {
-      status : 404
-    })
-  }
-    const userDetails = {
-      ...user,
-      stats : {
-        totalPosts : user.posts.length,
-        totalComments : user.posts.reduce((acc,post)=> acc + post.comments.length, 0),
-        totalLikes : user.likes.length
+            post: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            posts: true,
+            comments: true,
+            likes: true,
+          },
+        },
       },
+    });
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: "User not found",
+        },
+
+        {
+          status: 404,
+        },
+      );
     }
-    return NextResponse.json(userDetails)
-    
+    return NextResponse.json(user);
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while creating a user" },
       { status: 400 },
     );
   }
-
 }
 
-export async function PUT(request:Request, {params} : {params : Promise<{id : string}>}) {
-  try{  
-  const { id } = await params;
-  const userId = parseInt(id);
-    if(isNaN(userId)){
-        return NextResponse.json({error : "Invalid User Id"}, {status : 400})
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-   const body = await request.json();
-   const updatedUser = await prisma.user.update({
-    where : {
-      id : userId
-    },
-    data : {
-      ...body
-    }
-   })
-   return NextResponse.json(updatedUser)
-  }
-  catch(error){
-    return NextResponse.json({
-      error : "Something Went Wrong while editing the user."
-      
-    }, {status : 500})
-  }
-};
-
-export async function DELETE(request : Request, {params} : {params : Promise<{id : string}>}){
-  try{
     const { id } = await params;
-    const userId  = parseInt(
-      id
-    );
-    if(isNaN(userId)){
-      return NextResponse.json({
-        error: "Invalid user id"
+    const userId = parseInt(id);
+
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: "Invalid User Id" }, { status: 400 });
+    }
+        if (session.user.id !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const body = await request.json();
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
       },
-    {
-      status : 400
-    })
+      data: {
+        name: body.name,
+        email: body.email,
+      },
+    });
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "Something Went Wrong while editing the user.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const userId = parseInt(id);
+
+    if (isNaN(userId)) {
+      return NextResponse.json(
+        {
+          error: "Invalid user id",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    if (session.user.id !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     await prisma.user.delete({
-      where : {
-        id : userId
+      where: {
+        id: userId,
       },
-
-    })
+    });
     return NextResponse.json({
-      message  : "User Deleted Successfully"
-    })
-  }
-  catch(error){
+      message: "User Deleted Successfully",
+    });
+  } catch (error) {
     return NextResponse.json(
-      {error : "Something Went Wrong while deleting the user"},
-      {status : 500}
-    )
+      { error: "Something Went Wrong while deleting the user" },
+      { status: 500 },
+    );
   }
 }
-
