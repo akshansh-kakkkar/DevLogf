@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { error } from 'console';
+import { commentSchema } from "../../validators/comments";
 
 export async function GET(
   request: Request,
@@ -62,7 +62,8 @@ export async function POST(
     }
 
     const body = await request.json();
-    if (!body.content) {
+    const validation = commentSchema.safeParse(body)
+    if (!validation.success) {
       return NextResponse.json(
         { error: "Content and authorId are required" },
         { status: 400 },
@@ -86,7 +87,7 @@ export async function POST(
     }
     const newComment = await prisma.comment.create({
       data: {
-        content: body.content,
+        content: validation.data.content,
         postId,
         authorId: session.user.id,
       },

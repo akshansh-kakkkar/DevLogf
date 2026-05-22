@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { NextResponse } from "next/server";
-import { error } from "console";
+import { updatePostSchema } from "../../validators/post";
 
 export async function GET(
   request: Request,
@@ -68,6 +68,10 @@ export async function PUT(
     }
 
     const body = await request.json();
+    const validation = updatePostSchema.safeParse(body);
+    if(!validation.success){
+      return NextResponse.json({error : validation.error.flatten()}, {status : 400})
+    }
     const existingPost = await prisma.post.findUnique({
       where: {
         id: postId,
@@ -94,9 +98,9 @@ export async function PUT(
         id: postId,
       },
       data: {
-        title: body.title,
-        content: body.content,
-        image: body.image,
+        title: validation.data.title,
+        content: validation.data.content,
+        image: validation.data.image,
       },
       include: {
         author: true,
