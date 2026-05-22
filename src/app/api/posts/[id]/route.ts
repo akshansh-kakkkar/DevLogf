@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -48,6 +49,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { id } = await params;
     const postId = parseInt(id);
     if (isNaN(postId)) {
@@ -55,13 +60,32 @@ export async function PUT(
     }
 
     const body = await request.json();
-
+    const existingPost = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+    if (!existingPost) {
+      return NextResponse.json(
+        {
+          error: "Post Not Found",
+        },
+        { status: 404 },
+      );
+    }
+    if(existingPost.authorId !== session.user.id){
+      return NextResponse.json({
+        error : "Forbidden"
+      }, {status : 403})
+    }
     const updatedPost = await prisma.post.update({
       where: {
         id: postId,
       },
       data: {
-        ...body,
+        title: body.title,
+        content: body.content,
+        image: body.image,
       },
       include: {
         author: true,
@@ -71,7 +95,7 @@ export async function PUT(
     });
     return NextResponse.json(updatedPost);
   } catch (error) {
-    NextResponse.json(
+    return NextResponse.json(
       {
         error: "Something Went Wrong",
       },
@@ -84,6 +108,10 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
   const postId = parseInt(id);
   if (isNaN(postId)) {
@@ -91,8 +119,19 @@ export async function DELETE(
       {
         error: "Post Not Found",
       },
-      { status: 400 },
+      { status: 404 },
     );
+  }
+  const existingPost = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+  if (!existingPost) {
+    return NextResponse.json({ error: "Post not found" }, { status: 404 });
+  }
+  if (existingPost.authorId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   await prisma.post.delete({
     where: {

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
   await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -49,4 +50,33 @@ export async function GET(request: Request) {
         totalPages : Math.ceil(totalPosts/limit)
     }
   })
+}
+
+export async function POST(request:Request) {
+  try{
+    const body = await request.json();
+    if(!body.title || !body.image || !body.content){
+      return NextResponse.json({error : "All Fields are required"}, {status : 400})
+    }
+    const session = await getSession();
+    if(!session){
+      return NextResponse.json({error : "Unauthorized"}, {status : 401})
+    }
+    const newPost = await prisma.post.create({
+      data : {
+        title : body.title,
+        content : body.content,
+        image : body.image,
+        authorId : session.user.id
+      },
+      include : {
+        author : true,
+        comments : true,
+        likes : true,
+      }
+    })
+    return NextResponse.json(newPost, {status: 201})
+  }catch(error){
+    return NextResponse.json({error : "Something Went Wrong"}, {status : 500})
+  }
 }
