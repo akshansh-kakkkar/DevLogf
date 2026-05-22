@@ -55,7 +55,7 @@ export async function GET(
     
   } catch (error) {
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: "Something went wrong while creating a user" },
       { status: 400 },
     );
   }
@@ -82,7 +82,7 @@ export async function PUT(request:Request, {params} : {params : Promise<{id : st
   }
   catch(error){
     return NextResponse.json({
-      error : "Something Went Wrong"
+      error : "Something Went Wrong while editing the user."
       
     }, {status : 500})
   }
@@ -114,7 +114,7 @@ export async function DELETE(request : Request, {params} : {params : Promise<{id
   }
   catch(error){
     return NextResponse.json(
-      {error : "Something Went Wrong"},
+      {error : "Something Went Wrong while deleting the user"},
       {status : 500}
     )
   }

@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { error } from 'console';
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ postId: string }> },
 ) {
+  try{
   await new Promise((resolve) => setTimeout(resolve, 4000));
   const { postId: postIdStr } = await params;
   const postId = parseInt(postIdStr);
@@ -37,6 +39,10 @@ export async function GET(
     totalComments: Post.comments.length,
     comments: Post.comments,
   });
+}
+catch(error){
+  return NextResponse.json({error : "Something went wrong while fetching the comments"} , {status : 500})
+}
 }
 
 export async function POST(
@@ -92,8 +98,8 @@ export async function POST(
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Something Went wrong" },
-      { status: 400 },
+      { error: "Something Went wrong while posting the comment" },
+      { status: 500 },
     );
   }
 }

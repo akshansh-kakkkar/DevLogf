@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 export async function GET() {
+  try{
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const users = await prisma.user.findMany({
     select : {
@@ -19,6 +20,10 @@ export async function GET() {
     }
   })
   return NextResponse.json(users)
+}
+catch(error){
+  return NextResponse.json({error : "Something went wrong while fetching the users"},{status : 500})
+}
 }
 
 export async function POST(request: Request) {
@@ -58,7 +63,7 @@ export async function POST(request: Request) {
     return NextResponse.json(safeUser, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Something went wrong." },
+      { error: "Something went wrong. while creating a user." },
       { status: 400 },
     );
   }

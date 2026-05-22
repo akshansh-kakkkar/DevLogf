@@ -49,7 +49,7 @@ export async function POST(
     return NextResponse.json({ liked: true, message: "Post Liked" });
   } catch (error) {
     return NextResponse.json(
-      { error: "something went wrong" },
+      { error: "something went wrong while posting a like." },
       { status: 500 },
     );
   }

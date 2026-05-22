@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
 export async function GET(request: Request) {
+  try{
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const url = new URL(request.url);
   const search = url.searchParams.get("search") || "";
@@ -51,6 +52,10 @@ export async function GET(request: Request) {
     }
   })
 }
+catch(error){
+  return NextResponse.json({error : "Something went wrong whiel fetching the posts."}, {status : 500})
+}
+}
 
 export async function POST(request:Request) {
   try{
@@ -77,6 +82,6 @@ export async function POST(request:Request) {
     })
     return NextResponse.json(newPost, {status: 201})
   }catch(error){
-    return NextResponse.json({error : "Something Went Wrong"}, {status : 500})
+    return NextResponse.json({error : "Something Went Wrong while posting the post."}, {status : 500})
   }
 }
