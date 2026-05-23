@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { commentSchema } from "../../validators/comments";
+import { commentSchema } from "@/app/api/validators/comments";
 
 export async function GET(
   request: Request,
