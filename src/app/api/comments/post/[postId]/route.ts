@@ -89,7 +89,7 @@ export async function POST(
       data: {
         content: validation.data.content,
         postId,
-        authorId: session.user.id,
+        authorId: Number(session.user.id),
       },
       include: {
         author: true,
