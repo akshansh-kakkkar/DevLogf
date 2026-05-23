@@ -1,5 +1,5 @@
 "use client"
-import { MoveRight } from "lucide-react";
+import { MoveRight, Route } from "lucide-react";
 import { Libertinus_Serif} from "next/font/google";
 import Link from "next/link";
 import {motion} from "framer-motion";
@@ -20,7 +20,7 @@ export default function Page() {
      </div>
      <div className="flex sm:flex-row flex-col gap-4 sm:gap-12 items-center">
       <motion.div whileHover={{scale:0.95}} whileTap={{scale:1.1}}><Link className={`bg-[#191C1E] text-2xl  md:text-3xl group flex gap-3 text-white px-8 rounded-sm p-4 ${LibertinusSerif.className}`} href={'/about'}><div className="flex justify-center items-center  gap-7"><span>Get Started</span><span className="group-hover:translate-x-2 transition-all duration-300"><MoveRight /></span></div></Link></motion.div>
-      <motion.div whileHover={{scale:0.95}} whileTap={{scale:1.1}}><Link className={`border-[#191c1e] flex text-2xl md:text-3xl text-[#191C1E] border-2 px-12 rounded-sm p-4 ${LibertinusSerif.className}`} href={'/about'}><div>Explore Feed</div></Link></motion.div>
+      <motion.div whileHover={{scale:0.95}} whileTap={{scale:1.1}}><Link className={`border-[#191c1e] flex text-2xl md:text-3xl text-[#191C1E] border-2 px-12 rounded-sm p-4 ${LibertinusSerif.className}`} href={'/about'}><div className="flex gap-7 justify-center items-center group"><span>Explore Feed</span> <span className="transition-all duration-300  group-hover:-translate-x-2 "><Route/></span></div> </Link></motion.div>
       </div>    
     </div>
   );

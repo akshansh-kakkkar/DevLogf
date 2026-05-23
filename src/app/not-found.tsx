@@ -14,12 +14,12 @@ export default function Page() {
      <div> It looks like something is broken :(</div>
     </div>
     <div className={`${GeistFont.className} sm:flex-row flex-col font-semibold  text-2xl flex gap-5 justify-center items-center text-center`}>
-      <Link href="/"><motion.div whileHover={{scale:0.95}} whileTap={{scale:1.1}} className="bg-[#00687A] gap-5 text-white px-4 py-3 rounded-sm flex text-center items-center">
-        <span><MoveLeft /></span><span>Return To Home</span>
+      <Link href="/"><motion.div whileHover={{scale:0.95}} whileTap={{scale:1.1}} className="bg-[#00687A] group gap-5 text-white px-4 py-3 rounded-sm flex text-center items-center">
+        <span className="transition-all duration-300 group-hover:translate-x-2"><MoveLeft /></span><span>Return To Home</span>
       </motion.div></Link>
       
-      <Link href={'/posts'}><motion.div whileHover={{scale : 0.95}} whileTap={{scale:1.1}} className="flex gap-5 border-[#C6C6CD] text-[#191C1E] border-2 px-8 py-3 text-center items-center rounded-sm">
-        <span>Explore Feed</span><span><Route /></span>
+      <Link href={'/posts'}><motion.div whileHover={{scale : 0.95}} whileTap={{scale:1.1}} className="flex gap-5 border-[#C6C6CD] text-[#191C1E] border-2 px-8 py-3 text-center items-center rounded-sm group">
+        <span>Explore Feed</span><span className="group-hover:-translate-x-1 duration-300 transition-all"><Route /></span>
       </motion.div>
       </Link>
     </div>

@@ -2,7 +2,7 @@ import { Libertinus_Sans } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
 async function getPosts() {
-  const res = await fetch("http://localhost:3000/api/posts", {
+  const res = await fetch(`http://localhost:3000/api/posts`, {
     cache: "no-store",
   });
   return res.json();
@@ -19,7 +19,7 @@ export default async function PostPage(){
         
             <h1 className={`${LibreSans.className} text-4xl p-5`}>Posts</h1>
             <div className='flex gap-22 items-center h-full w-full justify-center '>
-               {data.posts.length === 0 ? (
+               {data.posts?.length === 0 ? (
                 <div className={`text-4xl font-semibold`}>No posts found</div>
                ) : (
                 data.post?.map((post:any)=>(
