@@ -32,7 +32,7 @@ export async function PUT(
     if (!existingComment) {
       return NextResponse.json({ error: "Comment not found" }, { status: 404 });
     }
-    if (existingComment.authorId !== session.user.id) {
+    if (existingComment.authorId !== Number(session.user.id)){
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     const updatedComment = await prisma.comment.update({
@@ -80,7 +80,7 @@ export async function DELETE(
             error : "commment not found"
         }, {status : 404})
     }
-    if(existingComment.authorId !== session.user.id ){
+    if(existingComment.authorId !== Number(session.user.id)){
         return NextResponse.json({error : "Forbidden"}, { status : 403})
     }
     await prisma.comment.delete({
