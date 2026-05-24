@@ -1,9 +1,7 @@
-"use client" 
-import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Loading from "./pageTransition";
 
+"use client"
+import "./globals.css";
+import LayoutWrapper from './components/layoutwrapper';
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -12,12 +10,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full antialiased`}>
       <body className="min-h-screen flex flex-col">
-        <Navbar />
-                 <Loading>
-
+        <LayoutWrapper>
         {children}
-        </Loading>
-        <Footer />
+        </LayoutWrapper>
       </body>
     </html>
   );
