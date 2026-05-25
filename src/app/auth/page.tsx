@@ -1,10 +1,13 @@
 "use client";
-import { Divide, Eye, EyeOff, Form, Mail, User, X } from "lucide-react";
+import { Eye, EyeOff, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, Lato, Libertinus_Serif, Poppins } from "next/font/google";
 import Image from "next/image";
 import { useState } from "react";
-import Loading from "../pageTransition";
+import { useRouter } from "next/navigation";
+import { signIn, signUp } from "@/lib/auth-client";
+import { motion } from "framer-motion";
+
 const libreSerif = Libertinus_Serif({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -21,7 +24,7 @@ const lato = Lato({
   weight: ["400", "700"],
 });
 
-export default function page() {
+export default function Page() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,16 +36,50 @@ export default function page() {
     password: false,
     confirmPassword: false,
   });
-  const [Loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [confirmtoggleEye, setConfirmToggleEye] = useState(false);
   const [toggleEye, setToggleEye] = useState(false);
   const [authType, setAuthType] = useState(false);
+  const router = useRouter();
   const togglePassword = () => {
     setToggleEye((prev) => !prev);
   };
   const confirmTogglePassword = () => {
     setConfirmToggleEye((prev) => !prev);
   };
+  const handleAuth = async () => {
+    try {
+      setLoading(true);
+      if (authType) {
+        const response = await signIn.email({
+          email,
+          password,
+        });
+        console.log(response);
+        router.push("/");
+        router.refresh();
+      } else {
+        const nameError = validator("name", name);
+        const emailError = validator("email", email);
+        const passwordError = validator("password", password);
+        const confirmError = validator("confirmPassword", confirmPassword);
+        if (nameError || emailError || passwordError || confirmError) {
+          setLoading(false)
+          return;
+        }
+        await signUp.email({
+          email,
+          password,
+          name,
+        });
+      }
+    } catch (err: any) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [error, setError] = useState({
     name: "",
     email: "",
@@ -94,11 +131,13 @@ export default function page() {
     setError((prev) => ({
       ...prev,
       [field]: error,
+
     }));
+    return error
   };
   return (
-    <div className=" flex h-full mt-8 mb-8 items-center justify-center">
-      <div className="flex flex-col md:flex-row w-full lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
+    <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
+      <div className="flex flex-col md:flex-row w-full  lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
         <div className="relative hidden md:block rounded-l-lg z-10 w-[33vw] overflow-hidden">
           <div className="opacity-50 absolute inset-0 bg-[url('/images/auth.jpeg')] bg-cover bg-center "></div>
           <div className="absolute inset-0 opacity-80 bg-[radial-gradient(circle,_#00687A,_#191C1E)]"></div>
@@ -216,9 +255,14 @@ export default function page() {
                   Password
                 </label>
                 <div className="relative">
-                  <Eye className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2" />
+                  <div
+                    onClick={togglePassword}
+                    className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2"
+                  >
+                    {toggleEye ? <Eye /> : <EyeOff />}
+                  </div>
                   <input
-                    type="password"
+                    type={toggleEye ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onBlur={() => {
@@ -240,12 +284,26 @@ export default function page() {
                   )}
                 </div>
               </div>
-              <div className="flex mt-4 justify-center rounded-lg text-2xl p-2 bg-[#191C1E] text-white">
-                <div className={`${poppins.className}`}>Login</div>
-              </div>
+              <motion.div
+                whileHover={{ scale: 0.9 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleAuth}
+                className="flex mt-4 justify-center rounded-lg text-2xl p-2  bg-[#191C1E] text-white"
+              >
+                <div className={`${poppins.className}`}>
+                  {loading ? "loading..." : "Login"}
+                </div>
+              </motion.div>
 
               <div className="flex sm:flex-row flex-col justify-center sm:gap-4 gap-6 mt-2">
-                <div className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4">
+                <div
+                  onClick={async () => {
+                    await signIn.social({
+                      provider: "google",
+                    });
+                  }}
+                  className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
+                >
                   <span>
                     <Image
                       src={"/images/google.svg"}
@@ -256,7 +314,14 @@ export default function page() {
                   </span>
                   <span>Login with Google</span>
                 </div>
-                <div className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4">
+                <div
+                  onClick={async () => {
+                    await signIn.social({
+                      provider: "github",
+                    });
+                  }}
+                  className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
+                >
                   <span>
                     <Image
                       src={"/images/github.svg"}
@@ -409,11 +474,23 @@ export default function page() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#191C1E] p-2 text-2xl mt-4 text-white flex justify-center rounded-lg">
-                  <button className={`${poppins.className}`}>SignUp</button>
-                </div>
+                <button
+                  onClick={handleAuth} type="submit"
+                  className="bg-[#191C1E] p-2 text-2xl mt-4 text-white flex justify-center rounded-lg"
+                >
+                  < div className={`${poppins.className}`}>
+                    {loading ? "loading..." : "Sign Up"}
+                  </div>
+                </button>
                 <div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
-                  <div className="flex justify-center items-center w-full rounded-lg border-1  p-2 text-center gap-4">
+                  <div
+                    onClick={async () => {
+                      await signIn.social({
+                        provider: "google",
+                      });
+                    }}
+                    className="flex justify-center items-center w-full rounded-lg border-1  p-2 text-center gap-4"
+                  >
                     <span>
                       <Image
                         src={"/images/google.svg"}
@@ -424,7 +501,14 @@ export default function page() {
                     </span>
                     <span>SignUp with Google</span>
                   </div>
-                  <div className="flex justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4">
+                  <div
+                    onClick={async () => {
+                      await signIn.social({
+                        provider: "github",
+                      });
+                    }}
+                    className="flex justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4"
+                  >
                     <span>
                       <Image
                         src={"/images/github.svg"}
