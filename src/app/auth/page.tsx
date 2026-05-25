@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { Eye, EyeOff, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, Lato, Libertinus_Serif, Poppins } from "next/font/google";
@@ -55,7 +56,11 @@ export default function Page() {
           email,
           password,
         });
-        console.log(response);
+        if (response.error) {
+          toast.error(response.error.message);
+          return;
+        }
+        toast.success("Logged In Successfully");
         router.push("/");
         router.refresh();
       } else {
@@ -64,17 +69,24 @@ export default function Page() {
         const passwordError = validator("password", password);
         const confirmError = validator("confirmPassword", confirmPassword);
         if (nameError || emailError || passwordError || confirmError) {
-          setLoading(false)
+          setLoading(false);
           return;
         }
-        await signUp.email({
+        const response = await signUp.email({
           email,
           password,
           name,
         });
+        if (response.error) {
+          toast.error(response.error.message);
+          return;
+        }
+        toast.success("Account Created Successfully");
+        router.push("/");
+        router.refresh();
       }
     } catch (err: any) {
-      console.log(err);
+      toast.error(err.message || "something went wrong");
     } finally {
       setLoading(false);
     }
@@ -131,9 +143,8 @@ export default function Page() {
     setError((prev) => ({
       ...prev,
       [field]: error,
-
     }));
-    return error
+    return error;
   };
   return (
     <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
@@ -475,10 +486,14 @@ export default function Page() {
                   </div>
                 </div>
                 <button
-                  onClick={handleAuth} type="submit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAuth();
+                  }}
+                  type="button"
                   className="bg-[#191C1E] p-2 text-2xl mt-4 text-white flex justify-center rounded-lg"
                 >
-                  < div className={`${poppins.className}`}>
+                  <div className={`${poppins.className}`}>
                     {loading ? "loading..." : "Sign Up"}
                   </div>
                 </button>

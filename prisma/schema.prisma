@@ -14,11 +14,15 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
+  id       String       @id @default(cuid())
   name     String
   email    String    @unique
+  emailVerified Boolean @default(false)
+  image  String?
+password String?
+createdAt  DateTime @default(now())
+updatedAt DateTime @updatedAt
   posts    Post[]
-  password String?
   likes    Like[]
   comments Comment[]
   accounts Account[]
@@ -33,7 +37,7 @@ model Post {
   likes     Like[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  authorId  Int
+  authorId  String
   author    User      @relation(fields: [authorId], references: [id])
   comments  Comment[]
 }
@@ -43,7 +47,7 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  authorId  Int
+  authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   postId    Int
   post      Post     @relation(fields: [postId], references: [id])
@@ -51,7 +55,7 @@ model Comment {
 
 model Like {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
   postId    Int
   post      Post     @relation(fields: [postId], references: [id])
@@ -66,12 +70,12 @@ model Account {
   providerId            String
   accessToken           String?
   refreshToken          String?
-  userId                Int
+  userId                String
   idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  passoword             String?
+  password             String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -80,7 +84,7 @@ model Account {
 model Session {
   id        String   @id @default(cuid())
   token     String   @unique
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   ipAddress String?
   userAgent String?
