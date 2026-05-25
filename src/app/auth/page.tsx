@@ -180,37 +180,6 @@ export default function page() {
           </div>
           {authType ? (
             <div className="mt-4 select-none  flex flex-col gap-6 w-full  sm:max-w-[520px]  sm:mx-auto px-5">
-              <div>
-                <label htmlFor="" className={`${poppins.className} text-md`}>
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2" />
-                  <input
-                    value={name}
-                    placeholder="John Doe"
-                    onChange={(e) => setName(e.target.value)}
-                    onBlurCapture={() => (
-                      setTouched((prev) => ({
-                        ...prev,
-                        name: true,
-                      })),
-                      validator("name", name)
-                    )}
-                    className={`border-1  pl-3 w-full ${lato.className}  text-[#191C1E] rounded-sm placeholder:text-[#6B7280]  text-lg border-[#6B7280] p-2`}
-                    type="text"
-                  />
-                  <div className="relative">
-                    {touched.name && error.name && (
-                      <div
-                        className={`${lato.className} text-red-500 text-sm  absolute`}
-                      >
-                        *{error.name}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
               <div className="flex flex-col gap-2">
                 <label htmlFor="" className={`${poppins.className}`}>
                   Email
