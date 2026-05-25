@@ -1,6 +1,6 @@
 "use client";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, User, X } from "lucide-react";
+import { Eye, EyeOff, Loader, Loader2, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, Lato, Libertinus_Serif, Poppins } from "next/font/google";
 import Image from "next/image";
@@ -26,11 +26,13 @@ const lato = Lato({
 });
 
 export default function Page() {
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [socialLoading, setSocialLoading] = useState(false);
+  const [socialLoading2, setSocialLoading2] = useState(false);
   const [touched, setTouched] = useState({
     name: false,
     email: false,
@@ -146,6 +148,16 @@ export default function Page() {
     }));
     return error;
   };
+  const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isSignInFormValid = name.trim().length >= 3  &&
+  emailRegex.test(email) &&
+  password.length>=8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[!@#$%^&*(),.?"{}|<>]/.test(password) &&
+  password === confirmPassword;
+
+  
   return (
     <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
       <div className="flex flex-col md:flex-row w-full  lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
@@ -214,18 +226,20 @@ export default function Page() {
             <div
               className={`flex text-xl sm:text-2xl bg-[#191C1E]  rounded-4xl ${lato.className}`}
             >
-              <div
+              <button
+              type="button"
                 onClick={() => setAuthType(false)}
                 className={`transition-all duration-300 cursor-pointer ${!authType ? "bg-[#00687A] text-white" : "text-white"}  px-8  sm:px-16 py-2 sm:py-3 rounded-4xl`}
               >
                 SIGNUP
-              </div>
-              <div
+              </button>
+              <button
+              type="button"
                 onClick={() => setAuthType(true)}
-                className={`${authType ? "bg-[#00687A] cursor-pointer text-white" : "text-white"} px-8 sm:px-16 rounded-4xl transition-all duration-300  py-2 sm:py-3`}
+                className={`${authType ? "bg-[#00687A]  text-white" : "text-white"} px-8 cursor-pointer sm:px-16 rounded-4xl transition-all duration-300  py-2 sm:py-3`}
               >
                 LOGIN
-              </div>
+              </button>
             </div>
           </div>
           {authType ? (
@@ -295,26 +309,39 @@ export default function Page() {
                   )}
                 </div>
               </div>
-              <motion.div
-                whileHover={{ scale: 0.9 }}
-                whileTap={{ scale: 0.95 }}
+              <motion.button
+              disabled={!isFormValid}
+                whileHover={{ scale: 0.98 }}
+                whileTap={{ scale: 0.99 }}
                 onClick={handleAuth}
-                className="flex mt-4 justify-center rounded-lg text-2xl p-2  bg-[#191C1E] text-white"
+                className={`flex mt-4 justify-center rounded-lg text-2xl p-2 cursor-pointer bg-[#191C1E] text-white disabled:cursor-not-allowed disabled:bg-[#191c1e4d]`}
               >
-                <div className={`${poppins.className}`}>
-                  {loading ? "loading..." : "Login"}
+                <div className={`${poppins.className} font-semibold tracking-widest`}>
+                  {loading ? <Loader2 />  : "LOGIN"}
                 </div>
-              </motion.div>
+              </motion.button>
 
               <div className="flex sm:flex-row flex-col justify-center sm:gap-4 gap-6 mt-2">
-                <div
+                <motion.button 
+                whileHover={{scale:0.98}}
+                whileTap={{scale:0.99}}
                   onClick={async () => {
+                    try{
+                      setSocialLoading(true)
                     await signIn.social({
                       provider: "google",
                     });
+                  }
+                  finally{
+                    setSocialLoading(false)
+                  }
                   }}
-                  className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
+                  className={`${socialLoading ? "pointer-events-none cursor-not-allowed scale-[98%]" : ""}  transition-all duration-300 cursor-pointer  flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4`}
                 >
+                  {socialLoading ? (
+                   < Loader2 className="animate-spin text-[#00687A]" />
+                  ) : (
+                    <>
                   <span>
                     <Image
                       src={"/images/google.svg"}
@@ -324,15 +351,29 @@ export default function Page() {
                     />
                   </span>
                   <span>Login with Google</span>
-                </div>
-                <div
+                  </>
+                  )}
+                  
+                </motion.button>
+                <motion.button
+                whileHover={{scale:0.98}}
+                whileTap={{scale:0.99}}
                   onClick={async () => {
+                    try{
+                      setSocialLoading2(true)
                     await signIn.social({
+                      
                       provider: "github",
                     });
+                  }finally{
+                    setSocialLoading2(false)
+                  }
                   }}
-                  className="flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
+                  className="flex justify-center cursor-pointer items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
                 >
+                  {socialLoading2 ? (
+                  <Loader2  className="animate-spin text-[#00687A]"/> ) : (
+                  <>
                   <span>
                     <Image
                       src={"/images/github.svg"}
@@ -342,7 +383,9 @@ export default function Page() {
                     />
                   </span>
                   <span>Login with Github</span>
-                </div>
+                  </>
+                  ) }
+                </motion.button>
               </div>
             </div>
           ) : (

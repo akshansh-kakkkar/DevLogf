@@ -78,7 +78,7 @@ export async function POST(request: Request) {
         title: validation.data.title,
         content: validation.data.content,
         image: validation.data.image,
-        authorId: Number(session.user.id),
+        authorId: String(session.user.id),
       },
       include: {
         author: true,

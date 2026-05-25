@@ -13,7 +13,7 @@ export async function GET(
     }
     const user = await prisma.user.findUnique({
       where: {
-        id: userId,
+        id: String(userId),
       },
       select: {
         id: true,
@@ -98,7 +98,7 @@ export async function PUT(
     const body = await request.json();
     const updatedUser = await prisma.user.update({
       where: {
-        id: userId,
+        id: String(userId),
       },
       data: {
         name: body.name,
@@ -144,7 +144,7 @@ export async function DELETE(
     }
     await prisma.user.delete({
       where: {
-        id: userId,
+        id: String(userId),
       },
     });
     return NextResponse.json({

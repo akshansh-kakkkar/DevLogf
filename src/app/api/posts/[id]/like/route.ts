@@ -27,7 +27,7 @@ export async function POST(
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_postId: {
-          userId: Number(session.user.id),
+          userId: String(session.user.id),
           postId
         },
       },
@@ -42,7 +42,7 @@ export async function POST(
     }
     await prisma.like.create({
       data: {
-        userId: Number(session.user.id),
+        userId: String(session.user.id),
         postId,
       },
     });

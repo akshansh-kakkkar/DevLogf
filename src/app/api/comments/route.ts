@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const comments = await prisma.comment.findMany({
     where: {
       ...(authorId && {
-        authorId: parseInt(authorId),
+        authorId: authorId,
       }),
       ...(postId && { postId: parseInt(postId) }),
     },
