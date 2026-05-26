@@ -15,7 +15,7 @@ export default function Page() {
         404
       </div>
       <div
-        className={`${GeistFont.className} text-[#45464D] flex text-center flex-col text-2xl`}
+        className={`${GeistFont.className} text-[#45464D] wrap-break-word flex text-center flex-col text-2xl`}
       >
         <div>Invalid URL</div>
         <div> It looks like something is broken :(</div>

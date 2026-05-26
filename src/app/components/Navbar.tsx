@@ -23,7 +23,7 @@ export default function Navbar() {
   };
   return (
     <>
-      <div className="flex justify-between text-center content-center items-center border-b border-[#C6C6CD] p-5">
+      <div className="fixed left-0 z-50 w-full h-20 bg-white flex top-0 justify-between text-center content-center items-center border-b border-[#C6C6CD] p-5">
         <div className="flex gap-18 text-center content-center items-center">
           <div className={`${GeistFont.className} text-3xl font-bold`}>
             <Link href={"/"}>DevLog</Link>
