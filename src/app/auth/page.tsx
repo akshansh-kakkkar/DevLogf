@@ -4,12 +4,11 @@ import { Eye, EyeOff, Loader, Loader2, Mail, User, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, Lato, Libertinus_Serif, Poppins } from "next/font/google";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth-client";
 import { motion } from "framer-motion";
-import { resolve } from "path";
-import Loading from '../pageTransition';
+
 
 const libreSerif = Libertinus_Serif({
   subsets: ["latin"],
@@ -28,6 +27,27 @@ const lato = Lato({
 });
 
 export default function Page() {
+  useEffect(()=>{
+    const resetState = ()=>{
+      setSwitchLoading(false);
+      setLoading(false);
+      setSocialLoading(false);
+      setSocialLoading2(false);
+      setSocialSignInLoading(false);
+      setSocialSignInLoading2(false)
+    }
+    const hnadleVisibility = ()=>{
+      if(document.visibilityState === 'visible'){
+        window.location.reload()
+      }
+    }
+
+    resetState();
+    document.addEventListener("visibilitychange", hnadleVisibility);
+    return()=>{
+      document.removeEventListener("visibilitychange", hnadleVisibility);
+    }
+  }, [])
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -338,6 +358,7 @@ export default function Page() {
                 whileHover={{ scale: 0.98 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={handleAuth}
+                type="button"
                 className={`flex mt-4 justify-center rounded-lg text-2xl p-2 cursor-pointer bg-[#191C1E] text-white disabled:cursor-not-allowed disabled:bg-[#191c1e4d]`}
               >
                 <div
@@ -351,6 +372,7 @@ export default function Page() {
                 <motion.button
                   whileHover={{ scale: 0.98 }}
                   whileTap={{ scale: 0.99 }}
+                  type="button"
                   onClick={async () => {
                     try {
                       setSocialLoading2(true);
@@ -363,7 +385,7 @@ export default function Page() {
                   }}
                   className={`${socialLoading ? "pointer-events-none cursor-not-allowed scale-[98%]" : ""}  transition-all duration-300 cursor-pointer  flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4`}
                 >
-                  {socialLoading ? (
+                  {socialLoading2 ? (
                     <Loader2 className="animate-spin text-[#00687A]" />
                   ) : (
                     <>
@@ -381,20 +403,22 @@ export default function Page() {
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 0.98 }}
+                  type="button"
+                  disabled={socialLoading}
                   whileTap={{ scale: 0.99 }}
                   onClick={async () => {
                     try {
-                      setSocialLoading2(true);
+                      setSocialLoading(true);
                       await signIn.social({
                         provider: "github",
                       });
                     } finally {
-                      setSocialLoading2(false);
+                      setSocialLoading(false);
                     }
                   }}
                   className="flex justify-center cursor-pointer items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
                 >
-                  {socialLoading2 ? (
+                  {socialLoading? (
                     <Loader2 className="animate-spin text-[#00687A]" />
                   ) : (
                     <>
@@ -569,6 +593,7 @@ export default function Page() {
                 </motion.button>
                 <div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
                   <motion.button
+                  type="button"
                     disabled={socialSignInLoading}
                     whileHover={{ scale: 0.98 }}
                     whileTap={{ scale: 0.99 }}
@@ -602,6 +627,7 @@ export default function Page() {
                   </motion.button>
 
                   <motion.button
+                  type="button"
                     whileHover={{ scale: 0.99 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={async () => {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, scale } from "framer-motion";
 import { useSession, signOut } from "@/lib/auth-client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const GeistFont = Geist({
@@ -86,9 +86,11 @@ export default function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ):(
-            <Link href={'/auth'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">Login</Link>
-          )}
+          ):(<>
+            <motion.div whileTap={{scale:0.98}} whileHover={{scale:0.99}}><Link href={'/auth?mode=signup'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">SignUp</Link></motion.div>
+            <motion.div whileTap={{scale:0.98}} whileHover={{scale:0.99}}><Link href={'/auth?mode=login'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">Login</Link></motion.div>
+         </>
+         )}
         </div>
         <motion.div
           exit={{ rotate: 0 }}
