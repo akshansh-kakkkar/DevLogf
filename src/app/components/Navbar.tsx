@@ -1,10 +1,10 @@
 "use client";
-import { Menu, X } from "lucide-react";
+import { CircleUser, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { AnimatePresence, motion, scale } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSession, signOut } from "@/lib/auth-client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const GeistFont = Geist({
@@ -67,7 +67,7 @@ export default function Navbar() {
             </ul>
           </div>
         </div>
-    
+    <div className="flex gap-5 items-center flex-row-reverse">
         <div className="flex items-center gap-4">
           {session   ? (
             <DropdownMenu>
@@ -76,22 +76,26 @@ export default function Navbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href={'/dashboard'}>Dashboard</Link>
+                  <Link href={'/dashboard'} className="flex justify-between items-center gap-5"><span><LayoutDashboard /></span> <span>Dashboard</span></Link>
                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                  <Link href={'/dashboard'}>Profile</Link>
+                  <Link href={'/profile'} className="flex justify-center items-center gap-5"><span><CircleUser /></span><span>Profile</span></Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={async()=> {await signOut()}}>
-                  Logout
+                  <div className="flex justify-center items-center gap-5">
+                  <span><LogOut/></span>
+                  <span>Logout</span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ):(<>
-            <motion.div whileTap={{scale:0.98}} whileHover={{scale:0.99}}><Link href={'/auth?mode=signup'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">SignUp</Link></motion.div>
-            <motion.div whileTap={{scale:0.98}} whileHover={{scale:0.99}}><Link href={'/auth?mode=login'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">Login</Link></motion.div>
+            <motion.div className="md:block hidden" whileTap={{scale:1.05}} whileHover={{scale:0.90}}><Link href={'/auth?mode=signup'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">SignUp</Link></motion.div>
+            <motion.div className="md:block hidden" whileTap={{scale:1.05}} whileHover={{scale:0.90}}><Link href={'/auth?mode=login'} className="outline-[#191C1E]  outline-2 -outline-offset-2  text-[#191C1E] px-4 py-2 rounded-sm">Login</Link></motion.div>
          </>
          )}
         </div>
+        <div>
         <motion.div
           exit={{ rotate: 0 }}
           animate={{ rotate: isOpen ? 360 : 0 }}
@@ -109,9 +113,9 @@ export default function Navbar() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
             exit={{ x: -100, opacity: 0 }}
-            className="bg-[#f7f9fb]  fixed mt-22 md:hidden border-[#c6c6cd] py-8 p-4 justify-center w-[200px]   text-center items-center mx-4 z-12 my-3 border rounded-md flex "
+            className="bg-[#f7f9fb] left-0  fixed mt-82 md:hidden border-[#c6c6cd] py-8 p-4 justify-center w-[220px]   text-center items-center mx-4 z-12 my-3 border rounded-md flex "
           >
-            <div className="absolute flex top-4 right-4 bg-[#191C1E]  text-white rounded-full p-1 shadow" onClick={toggleOpen} ><X /></div>
+            <div className="absolute flex top-4 left-4 bg-[#191C1E]  text-white rounded-full p-1 shadow" onClick={toggleOpen} ><X /></div>
             <ul
               className={`flex flex-col gap-4 ${JetBrainsMono.className} top-3 relative text-[#191C1E] text-xl font-medium`}
             >
@@ -147,10 +151,21 @@ export default function Navbar() {
                   Contact
                 </Link>
               </li>
+               
+                {!session && (
+                   <>
+                   <div className="flex gap-4">
+            <motion.div whileTap={{scale:1.05}} whileHover={{scale:0.90}}><Link href={'/auth?mode=signup'} className="bg-[#191C1E]  text-white px-2 py-1 rounded-sm">SIGNUP</Link></motion.div>
+            <motion.div  whileTap={{scale:1.05}} whileHover={{scale:0.90}}><Link href={'/auth?mode=login'} className="outline-[#191C1E]  outline-2  text-[#191C1E] px-3 py-1 rounded-sm">LOGIN</Link></motion.div>
+      </div>
+      </>)}
+         
             </ul>
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
+      </div>
     </>
   );
 }
