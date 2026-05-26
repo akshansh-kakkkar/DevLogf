@@ -1,10 +1,12 @@
 "use client";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSession, signOut } from "@/lib/auth-client";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const GeistFont = Geist({
   subsets: ["latin"],
 });
@@ -12,6 +14,8 @@ const JetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 export default function Navbar() {
+  const {data:session} =useSession();
+
   const [isOpen, setIsOpen] = useState(false);
   const Pathname = usePathname();
   const toggleOpen = () => {
@@ -63,13 +67,28 @@ export default function Navbar() {
             </ul>
           </div>
         </div>
-        <div className="relative md:block hidden items-center ">
-          <Search className=" absolute left-2 top-1/2 -translate-y-1/2 h-5 w-5  text-[#45464D]" />
-          <input
-            type="text"
-            placeholder="search..."
-            className="border-[#C6C6CD]  py-2 px-5 outline-[#45464D] text-lg rounded-md border-2 pl-10 pr-2 bg-[#F2F4F6] placeholder:text-[#aeaeb9]"
-          />
+    
+        <div className="flex items-center gap-4">
+          {session   ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild >
+                <button className="h-10 w-10 rounded-full bg-[#00687A] text-white font-semibold flex items-center justify-center">{session.user.name?.charAt(0).toUpperCase()}</button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={'/dashboard'}>Dashboard</Link>
+                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                  <Link href={'/dashboard'}>Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={async()=> {await signOut()}}>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ):(
+            <Link href={'/auth'} className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm">Login</Link>
+          )}
         </div>
         <motion.div
           exit={{ rotate: 0 }}

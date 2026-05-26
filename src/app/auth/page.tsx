@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Geist, Lato, Libertinus_Serif, Poppins } from "next/font/google";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth-client";
 import { motion } from "framer-motion";
+import { resolve } from "path";
+import Loading from '../pageTransition';
 
 const libreSerif = Libertinus_Serif({
   subsets: ["latin"],
@@ -43,8 +45,22 @@ export default function Page() {
   const [socialSignInLoading2, setSocialSignInLoading2] = useState(false);
   const [confirmtoggleEye, setConfirmToggleEye] = useState(false);
   const [toggleEye, setToggleEye] = useState(false);
-  const [authType, setAuthType] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const authType = searchParams.get("mode") === "login";
+  const [switchLoading, setSwitchLoading] = useState(false);
+  const switchMode = async (mode: "login" | "signup") => {
+
+    if((mode === "login" && authType) || (mode === "signup" && !authType)){
+      return;
+    }
+    setSwitchLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    router.push(`/auth?mode=${mode}`);
+    setSwitchLoading(false);
+  };
+
+
   const togglePassword = () => {
     setToggleEye((prev) => !prev);
   };
@@ -73,6 +89,7 @@ export default function Page() {
         const emailError = validator("email", email);
         const passwordError = validator("password", password);
         const confirmError = validator("confirmPassword", confirmPassword);
+
         if (nameError || emailError || passwordError || confirmError) {
           setLoading(false);
           return;
@@ -92,7 +109,6 @@ export default function Page() {
           router.push("/");
           router.refresh();
         }, 1000);
-
       }
     } catch (err: any) {
       toast.error(err.message || "something went wrong");
@@ -168,8 +184,17 @@ export default function Page() {
   const isLoginFormValid = password.length >= 1 && emailRegex.test(email);
 
   return (
+    <>
+    {switchLoading ? (
+      <div className="flex items-center  justify-center min-h-screen ">
+        <div className=" w-full lg:w-[67vw]  h-[650px] rounded-md bg-[#F7F9FB] drop-shadow-lg flex items-center justify-center ">
+          <Loader2 className="animate-spin text-[#00687A] " size={64}/>
+        </div>
+      </div>
+    ) : (
     <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
       <div className="flex flex-col md:flex-row w-full  lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
+
         <div className="relative hidden md:block rounded-l-lg z-10 w-[33vw] overflow-hidden">
           <div className="opacity-50 absolute inset-0 bg-[url('/images/auth.jpeg')] bg-cover bg-center "></div>
           <div className="absolute inset-0 opacity-80 bg-[radial-gradient(circle,_#00687A,_#191C1E)]"></div>
@@ -237,14 +262,14 @@ export default function Page() {
             >
               <button
                 type="button"
-                onClick={() => setAuthType(false)}
+                onClick={() => switchMode("signup")}
                 className={`transition-all duration-300 cursor-pointer ${!authType ? "bg-[#00687A] text-white" : "text-white"}  px-8  sm:px-16 py-2 sm:py-3 rounded-4xl`}
               >
                 SIGNUP
               </button>
               <button
                 type="button"
-                onClick={() => setAuthType(true)}
+                onClick={() => switchMode("login")}
                 className={`${authType ? "bg-[#00687A]  text-white" : "text-white"} px-8 cursor-pointer sm:px-16 rounded-4xl transition-all duration-300  py-2 sm:py-3`}
               >
                 LOGIN
@@ -542,82 +567,78 @@ export default function Page() {
                     {loading ? <Loader2 className="animate-spin" /> : "SIGN UP"}
                   </div>
                 </motion.button>
-                < div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
-                  <motion.button 
-                  disabled={socialSignInLoading}
-                  whileHover={{scale:0.98}}
-                  whileTap={{scale:0.99}}
+                <div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
+                  <motion.button
+                    disabled={socialSignInLoading}
+                    whileHover={{ scale: 0.98 }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={async () => {
-                      try{
-                        setSocialSignInLoading(true)
-                      await signIn.social({
-                        provider: "google",
-                      });}
-                      finally{
-                        setSocialSignInLoading(false)
+                      try {
+                        setSocialSignInLoading(true);
+                        await signIn.social({
+                          provider: "google",
+                        });
+                      } finally {
+                        setSocialSignInLoading(false);
                       }
                     }}
                     className={`flex justify-center cursor-pointer items-center w-full rounded-lg border-1  p-2 text-center gap-4 ${socialSignInLoading ? "cursor-not-allowed" : ""}`}
                   >
-                      {
-                        socialSignInLoading ? (
-                          <Loader2 className="animate-spin" />
-                        ) : (
-                      
-                   
-                    <>
-                    <span>
-                      <Image
-                        src={"/images/google.svg"}
-                        alt="google"
-                        width={30}
-                        height={30}
-                      />
-                    </span>
-                    <span>SignUp with Google</span>
-</>
-                        )}
-                  </motion.button>
-                  
-                  
-                  
-                  <motion.button
-                  whileHover={{scale:0.99}}
-                  whileTap={{scale:0.98}}
-                    onClick={async () => {
-                      try{
-                        setSocialSignInLoading2(true)
-                      await signIn.social({
-                        provider: "github",
-                      });
-                    }
-                    finally{
-                      setSocialSignInLoading2(false)
-                    }
-                    }}
-                    className={`${socialSignInLoading2 ? "cursor-not-allowed" : ""} flex cursor-pointer justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4`}
-                  >
-                    {socialSignInLoading2 ? (<Loader2 className="animate-spin" />) : (
-                    <>
-                    <span>
-                      <Image
-                        src={"/images/github.svg"}
-                        alt="github"
-                        width={30}
-                        height={30}
-                      />
-                    </span>{" "}
-                    <span>SignUp with Github</span>
-                    </>
+                    {socialSignInLoading ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <>
+                        <span>
+                          <Image
+                            src={"/images/google.svg"}
+                            alt="google"
+                            width={30}
+                            height={30}
+                          />
+                        </span>
+                        <span>SignUp with Google</span>
+                      </>
                     )}
                   </motion.button>
 
+                  <motion.button
+                    whileHover={{ scale: 0.99 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={async () => {
+                      try {
+                        setSocialSignInLoading2(true);
+                        await signIn.social({
+                          provider: "github",
+                        });
+                      } finally {
+                        setSocialSignInLoading2(false);
+                      }
+                    }}
+                    className={`${socialSignInLoading2 ? "cursor-not-allowed" : ""} flex cursor-pointer justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4`}
+                  >
+                    {socialSignInLoading2 ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <>
+                        <span>
+                          <Image
+                            src={"/images/github.svg"}
+                            alt="github"
+                            width={30}
+                            height={30}
+                          />
+                        </span>{" "}
+                        <span>SignUp with Github</span>
+                      </>
+                    )}
+                  </motion.button>
                 </div>
               </div>
             </form>
           )}
         </div>
       </div>
-    </div>
+    </div>)}
+    </>
   );
 }
