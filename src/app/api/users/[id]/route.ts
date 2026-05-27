@@ -19,6 +19,13 @@ export async function GET(
         id: true,
         name: true,
         email: true,
+        bio : true,
+        location:true,
+        github : true,
+        Linkdin : true,
+        Instagram : true,
+        website : true,
+        
         posts: {
           select: {
             id: true,
@@ -68,7 +75,14 @@ export async function GET(
         },
       );
     }
-    return NextResponse.json(user);
+    const mappedUser = {
+      ...user,
+      gitHubUrl: user.github,
+      linkedinUrl: user.Linkdin,
+      instagramUrl: user.Instagram,
+      websiteUrl: user.website,
+    };
+    return NextResponse.json(mappedUser);
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while fetching a user" },
@@ -103,15 +117,22 @@ export async function PUT(
       },
       data: {
         name: body.name,
-        github: body.github,
-        Instagram: body.Instagram,
-        Linkdin: body.Linkdin,
+        github: body.gitHubUrl,
+        Instagram: body.instagramUrl,
+        Linkdin: body.linkedinUrl,
         bio: body.bio,
-        website: body.website,
+        website: body.websiteUrl,
         location: body.location,
       },
     });
-    return NextResponse.json(updatedUser);
+    const mappedUser = {
+      ...updatedUser,
+      gitHubUrl: updatedUser.github,
+      linkedinUrl: updatedUser.Linkdin,
+      instagramUrl: updatedUser.Instagram,
+      websiteUrl: updatedUser.website,
+    };
+    return NextResponse.json(mappedUser);
   } catch (error) {
     return NextResponse.json(
       {
