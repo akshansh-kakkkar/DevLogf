@@ -18,6 +18,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Libertinus_Sans, Poppins } from "next/font/google";
 import Link from "next/link";
+import { signOut } from "@/lib/auth-client";
+import { usePathname, useRouter } from "next/navigation";
 const libretinusSans = Libertinus_Sans({
   subsets: ["latin"],
   weight: ["700"],
@@ -28,6 +30,8 @@ const poppins = Poppins({
 });
 export default function AppDrawer() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname()
   return (
     <>
       <button
@@ -74,13 +78,13 @@ export default function AppDrawer() {
                     </span>
                   </div>
                   <div className="flex justify-start gap-12  items-center">
-                    <div className="flex flex-col text-center justify-center items-center gap-2 text-sm">
+                    <div className="flex flex-col transition-all duration-300 text-center justify-center items-center gap-2 text-sm">
                       <Link
-                        className="border flex justify-center items-center text-center rounded-full p-2 bg-white shadow-lg"
-                        href={"/profile/edit"}
+                        className={`border flex ${pathname==='/profile/edit' ?  "":"p-2 hover:bg-accent"}  border-[#00687A] justify-center items-center text-center rounded-full bg-white shadow-lg ${pathname=== '/profile' ? "bg-[#00687A]" : "hover:bg-accent"}  `}
+                        href={"/profile/edit"} 
                       >
                         <span>
-                          <UserRoundPen size={32} strokeWidth={2} />
+                          <UserRoundPen className={`${pathname === "/profile/edit" ? "bg-[#00687A] p-2 rounded-full text-white" : "text-[#00687A] hover:bg-accent"}`}  size={pathname === "/profile/edit" ? 48 : 32} strokeWidth={2} />
                         </span>
                       </Link>
                       <span className={`${poppins.className} text-sm`}>
@@ -90,10 +94,10 @@ export default function AppDrawer() {
                     <div className="flex justify-center items-center flex-col text-center  gap-2">
                       <Link
                         href="/profile/picture"
-                        className="border rounded-full flex  items-center text-center justify-center p-2 bg-white shadow-lg"
+                        className={`border border-[#00687A] transial   duration-300 rounded-full flex  items-center text-center justify-center  bg-white shadow-lg ${pathname === '/profile/picture' ? ""  : "hover-:bg-accent p-2"}`}
                       >
                         <span>
-                          <ContactRound size={32} strokeWidth={2} />
+                          <ContactRound className={`${pathname=== '/profile/picture' ? " bg-[#00687A] text-white p-2 rounded-full " : "text-[#00687A] hover:bg-accent"}`} size={pathname === '/profile/picture' ? 54 : 32} strokeWidth={2} />
                         </span>
                       </Link>
                       <span className={`${poppins.className} text-sm`}>
@@ -103,10 +107,10 @@ export default function AppDrawer() {
                     <div className="flex justify-center items-center flex-col text-center gap-2">
                       <Link
                         href={"/profile/security"}
-                        className="border rounded-full flex items-center text-center p-2 bg-white shadow-lg"
+                        className={`border rounded-full flex items-center text-center bg-white shadow-lg transition-all duration-300 border-[#00687A] ${pathname === '/profile/security' ? "" : "hover:bg-accent p-2"}`}
                       >
                         <span>
-                          <ShieldUser size={32} strokeWidth={2} />
+                          <ShieldUser className={`${pathname === '/profile/security' ? "bg-[#00687A] text-white p-2 rounded-full " : "text-[#0068A] hover:bg-accent"}`} size={pathname === '/profile' ? 48 : 32} strokeWidth={2} />
                         </span>
                       </Link>
                       <span className={`${poppins.className} text-sm`}>
@@ -155,14 +159,14 @@ export default function AppDrawer() {
                   </div>
                   <div className="flex justify-start items-center mx-4  text-center gap-12">
                     <div className="flex flex-col items-center justify-center gap-2">
-                    <Link href={"/profile/appearance"} className="border flex-col rounded-full flex items-center text-center p-2 bg-white shadow-lg">
+                    <button onClick={()=>{signOut();router.push('/')}} className="border flex-col rounded-full flex items-center text-center p-2 bg-white shadow-lg">
                     <span><LogOut className="text-red-500 rotate-180"  size={32}/></span>
                     
-                    </Link>
+                    </button>
                     <span className={`text-sm ${poppins.className}`}>SignOut</span>
                   </div>
                   <div className="flex flex-col items-center gap-2 justify-center">
-                    <Link href={'/profile/accountdeletion'} className="border flex-col rounded-full flex items-center p-2 text-center bg-white shadow-lg ">
+                    <Link href={'/profile'} className="border flex-col rounded-full flex items-center p-2 text-center bg-white shadow-lg ">
                     <span><CircleUser size={32}  /></span>
                     </Link>
                     <span className={`${poppins.className} text-sm`}>Account</span>

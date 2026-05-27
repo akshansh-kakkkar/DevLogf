@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("h-full", "antialiased", "font-sans", geist.variable)}>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen pt-24 md:pt-10 flex flex-col">
         <LayoutWrapper>
         {children}
         <Toaster richColors position="top-right"/>

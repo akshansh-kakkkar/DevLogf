@@ -142,10 +142,10 @@ const SideBar = () => {
               router.push("/");
             }}
             size={36}
-            className=" p-2 rounded-full cursor-pointer "
+            className="text-red-500 p-2 rounded-full cursor-pointer "
           />
         </span>
-        <span className={`${poppins.className} `}>Logout</span>
+        <span className={`${poppins.className} font-medium text-red-500`}>Logout</span>
       </div>
     </div>
   );

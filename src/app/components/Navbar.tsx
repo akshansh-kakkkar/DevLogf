@@ -108,12 +108,14 @@ export default function Navbar() {
       </div>
       <AnimatePresence>
         {isOpen && (
+                  <div onClick={()=> setIsOpen(false)} className="fixed inset-0  z-20">
+
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
             exit={{ x: -100, opacity: 0 }}
-            className="bg-[#f7f9fb] left-0  fixed mt-82 md:hidden border-[#c6c6cd] py-8 p-4 justify-center w-[220px]   text-center items-center mx-4 z-12 my-3 border rounded-md flex "
+            className="bg-[#f7f9fb]   left-0  fixed mt-24 md:hidden border-[#c6c6cd] py-8 p-4 justify-center w-[220px]   text-center items-center mx-4 z-12 my-3 border rounded-md flex "
           >
             <div className="absolute flex top-4 left-4 bg-[#191C1E]  text-white rounded-full p-1 shadow" onClick={toggleOpen} ><X /></div>
             <ul
@@ -162,9 +164,11 @@ export default function Navbar() {
          
             </ul>
           </motion.div>
+          </div>
         )}
       </AnimatePresence>
       </div>
+      
       </div>
     </>
   );
