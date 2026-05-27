@@ -76,7 +76,7 @@ const SideBar = () => {
       <div className="ml-12 flex flex-col gap-2 mt-6">
         <Link
           className={`${pathName === "/profile/edit" ? "bg-[#00687A] w-[185px] text-white p-2 rounded-lg" : "hover:bg-accent"} w-[185px] p-2 rounded-lg flex 2 justify-start transition-all gap-2  duration-300 font-medium items-center text-[#45464D] text-center text-md ${poppins.className} `}
-          href={"profile/edit"}
+          href={"/profile/edit"}
         >
           <span>
             <UserRoundPen />

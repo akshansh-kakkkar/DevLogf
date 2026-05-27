@@ -54,7 +54,7 @@ export default function AppDrawer() {
             <motion.div
               transition={{ damping: 25, stiffness: 220, type: spring }}
               animate={{ y: 0 }}
-              exit={{ y: "100%%" }}
+              exit={{ y: "100%" }}
               initial={{ y: "100%" }}
               className="right-0 left-0 bg-white overflow-y-auto  h-[65vh] bottom-0 fixed z-50 p-6 rounded-t-3xl"
             >
