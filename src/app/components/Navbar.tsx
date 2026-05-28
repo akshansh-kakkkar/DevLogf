@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 const GeistFont = Geist({
   subsets: ["latin"],
 });
@@ -19,7 +20,7 @@ const JetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, refetch } = useSession();
 
   const [isOpen, setIsOpen] = useState(false);
   const Pathname = usePathname();
@@ -77,8 +78,16 @@ export default function Navbar() {
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger >
-                  <div className="h-10 w-20 cursor-pointer  rounded-full gap-auto flex-row   bg-white shadow-lg border  font-semibold flex items-center justify-between">
+                  <div className=" cursor-pointer  rounded-full gap-auto flex-row px-3  bg-white shadow-lg border py-2 gap-7  font-semibold flex items-center justify-between">
+                    {session?.user?.image ? (
+                      <div className="rounded-full relative h-10 w-10 items-center border-2 border-[#00687A] justify-center">
+                        <Image src={session?.user?.image} fill  className="rounded-full object-cover" alt={session?.user?.name}/>
+                      </div>
+                    ) : (
+
+                    
                   <span className="bg-[#00687A] rounded-full  h-10 w-10 text-center text-white flex items-center justify-center text-white">{session.user.name?.charAt(0).toUpperCase()}</span>
+                  )}
                   <span className="-translate-x-2 cursor-pointer border-1 rounded-full" >
                     <ChevronDown size={24}/>
                   </span>
