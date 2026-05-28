@@ -15,8 +15,9 @@ export async function PUT(request: Request) {
         { status: 400 },
       );
     }
-    const base64 = Buffer.byteLength(body.image, "base64") / (1024 * 1024);
-    if (base64 < 2) {
+    const base64Data = body.image.replace(/^data:image\/\w+;base64,/, "")
+    const imageSize = Buffer.byteLength(base64Data, "base64") / (1024 * 1024);
+    if (imageSize > 2) {
       return NextResponse.json(
         { message: "Image size exceeds 2mb" },
         { status: 400 },
