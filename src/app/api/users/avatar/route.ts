@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
+
 export async function PUT(request: Request) {
   try {
     const session = await getSession();
@@ -15,7 +16,7 @@ export async function PUT(request: Request) {
         { status: 400 },
       );
     }
-    const base64Data = body.image.replace(/^data:image\/\w+;base64,/, "")
+    const base64Data = body.image.replace(/^data:image\/\w+;base64,/, "");
     const imageSize = Buffer.byteLength(base64Data, "base64") / (1024 * 1024);
     if (imageSize > 2) {
       return NextResponse.json(
@@ -48,6 +49,33 @@ export async function PUT(request: Request) {
       },
       { status: 201 },
     );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const session = await getSession();
+    if(!session){
+      return NextResponse.json({message : "Unauthorized"}, {status : 401})
+    }
+    await prisma.user.update({
+
+      where : {
+        id : session.user.id,
+      },
+      data  : {
+        image :null
+      }
+    })
+    return NextResponse.json({
+      success: true,
+      message: "Profile Picture deleted successfully",
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong" },

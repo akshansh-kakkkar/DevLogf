@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Geist, JetBrains_Mono } from 'next/font/google';
 import { usePathname } from "next/navigation";
-import path from "path";
+
 
 const geist = Geist({
     subsets : ['latin']
