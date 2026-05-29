@@ -1,5 +1,5 @@
 "use client";
-import { ChevronDown, ChevronDownCircle, CircleUser, EllipsisVertical, Grip, LayoutDashboard, LogOut, X } from "lucide-react";
+import { ChevronDown, CircleUser, EllipsisVertical, LayoutDashboard, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 const GeistFont = Geist({
   subsets: ["latin"],
 });
@@ -27,6 +28,7 @@ export default function Navbar() {
   const toggleOpen = () => {
     setIsOpen((prev) => !prev);
   };
+  const router = useRouter()
   return (
     <>
       <div className="fixed left-0 z-50 w-full h-20 bg-white flex top-0 justify-between text-center content-center items-center border-b border-[#C6C6CD] p-5">
@@ -120,6 +122,7 @@ export default function Navbar() {
                   <DropdownMenuItem
                     onClick={async () => {
                       await signOut();
+                      router.push('/auth')
                     }}
                   >
                     <div className="flex justify-center items-center gap-5">

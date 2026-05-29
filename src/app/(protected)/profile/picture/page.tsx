@@ -232,7 +232,7 @@ export default function Avatar() {
             />
 
             <div className="flex md:flex-row w-full flex-col gap-6 items-center">
-              <div className="flex flex-col w-full gap-4 rounded-sm md:h-[25vh] md:w-1/2 bg-white border-1 p-6">
+              <div className="flex flex-col w-full gap-4 rounded-sm md:h-[25vh] md:w-1/2 bg-white border p-6">
                 <div className="flex gap-3 items-center">
                   <span>
                     <ScanFace size={24} strokeWidth={3} />
@@ -249,7 +249,7 @@ export default function Avatar() {
                   is recommended.
                 </div>
               </div>
-              <div className="flex w-full md:h-[25vh] flex-col gap-4  rounded-sm md:w-1/2 bg-white border-1 p-6">
+              <div className="flex w-full md:h-[25vh] flex-col gap-4  rounded-sm md:w-1/2 bg-white border p-6">
                 <div className="flex gap-3 items-center">
                   <span>
                     <Info size={24} strokeWidth={3} />

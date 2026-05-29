@@ -9,7 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth-client";
 import { motion } from "framer-motion";
 
-
 const libreSerif = Libertinus_Serif({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -27,27 +26,27 @@ const lato = Lato({
 });
 
 export default function Page() {
-  useEffect(()=>{
-    const resetState = ()=>{
+  useEffect(() => {
+    const resetState = () => {
       setSwitchLoading(false);
       setLoading(false);
       setSocialLoading(false);
       setSocialLoading2(false);
       setSocialSignInLoading(false);
-      setSocialSignInLoading2(false)
-    }
-    const hnadleVisibility = ()=>{
-      if(document.visibilityState === 'visible'){
-        window.location.reload()
+      setSocialSignInLoading2(false);
+    };
+    const hnadleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        window.location.reload();
       }
-    }
+    };
 
     resetState();
     document.addEventListener("visibilitychange", hnadleVisibility);
-    return()=>{
+    return () => {
       document.removeEventListener("visibilitychange", hnadleVisibility);
-    }
-  }, [])
+    };
+  }, []);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -70,8 +69,7 @@ export default function Page() {
   const authType = searchParams.get("mode") === "login";
   const [switchLoading, setSwitchLoading] = useState(false);
   const switchMode = async (mode: "login" | "signup") => {
-
-    if((mode === "login" && authType) || (mode === "signup" && !authType)){
+    if ((mode === "login" && authType) || (mode === "signup" && !authType)) {
       return;
     }
     setSwitchLoading(true);
@@ -80,13 +78,13 @@ export default function Page() {
     setSwitchLoading(false);
   };
 
-
   const togglePassword = () => {
     setToggleEye((prev) => !prev);
   };
   const confirmTogglePassword = () => {
     setConfirmToggleEye((prev) => !prev);
   };
+
   const handleAuth = async () => {
     try {
       setLoading(true);
@@ -99,11 +97,7 @@ export default function Page() {
           toast.error(response.error.message);
           return;
         }
-        toast.success("Logged In Successfully");
-        setTimeout(() => {
-          router.push("/");
-          router.refresh();
-        }, 1000);
+        router.push("/?toast=login-success");
       } else {
         const nameError = validator("name", name);
         const emailError = validator("email", email);
@@ -123,12 +117,7 @@ export default function Page() {
           toast.error(response.error.message);
           return;
         }
-
-        toast.success("Account Created Successfully");
-        setTimeout(() => {
-          router.push("/");
-          router.refresh();
-        }, 1000);
+        router.push("/?toast=signup-success");
       }
     } catch (err: any) {
       toast.error(err.message || "something went wrong");
@@ -205,466 +194,486 @@ export default function Page() {
 
   return (
     <>
-    {switchLoading ? (
-      <div className="flex items-center  justify-center min-h-screen ">
-        <div className=" w-full lg:w-[67vw]  h-[650px] rounded-md bg-[#F7F9FB] drop-shadow-lg flex items-center justify-center ">
-          <Loader2 className="animate-spin text-[#00687A] " size={64}/>
-        </div>
-      </div>
-    ) : (
-    <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
-      <div className="flex flex-col md:flex-row w-full  lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
-
-        <div className="relative hidden md:block rounded-l-lg z-10 w-[33vw] overflow-hidden">
-          <div className="opacity-50 absolute inset-0 bg-[url('/images/auth.jpeg')] bg-cover bg-center "></div>
-          <div className="absolute inset-0 opacity-80 bg-[radial-gradient(circle,_#00687A,_#191C1E)]"></div>
-          <div className="flex flex-col h-full justify-between">
-            <div className="mx-8 mt-7 flex gap-5 items-center">
-              <div className="z-200">
-                <Image
-                  src="/images/logo.svg"
-                  className="rounded-lg select-none z-140"
-                  alt="logo"
-                  width={70}
-                  height={70}
-                />
-              </div>
-              <div
-                className={`${lato.className} z-40 text-4xl text-white font-bold uppercase tracking-widest`}
-              >
-                DevLog
-              </div>
-            </div>
-
-            <div
-              className={`${lato.className} text-2xl z-40 font-light text-white m-12`}
-            >
-              A place for developer to grow together.
-            </div>
+      {switchLoading ? (
+        <div className="flex items-center  justify-center min-h-screen ">
+          <div className=" w-full lg:w-[67vw]  h-[650px] rounded-md bg-[#F7F9FB] drop-shadow-lg flex items-center justify-center ">
+            <Loader2 className="animate-spin text-[#00687A] " size={64} />
           </div>
         </div>
-        <div className=" py-5 w-full md:w-[34vw] md:min-w-[500px]">
-          <div className="flex  mt-6 mx-5 items-start justify-between ">
-            <div className="flex flex-col gap-1 text-left">
-              <div
-                className={`${poppins.className} text-[#191C1E]  text-3xl font-semibold`}
-              >
-                {!authType ? (
-                  <div className="transition-all duration-300">Welcome</div>
-                ) : (
-                  <div className="transition-all duration-300">
-                    Welcome Back
+      ) : (
+        <div className=" flex h-full mt-8 mb-8 items-center min-h-[91.4427vh] justify-center">
+          <div className="flex flex-col md:flex-row w-full  lg:w-[67vw] mx-5 sm:mx-0 h-full overflow-hidden  justify-center rounded-md bg-[#F7F9FB] drop-shadow-lg">
+            <div className="relative hidden md:block rounded-l-lg z-10 w-[33vw] overflow-hidden">
+              <div className="opacity-50 absolute inset-0 bg-[url('/images/auth.jpeg')] bg-cover bg-center "></div>
+              <div className="absolute inset-0 opacity-80 bg-[radial-gradient(circle,_#00687A,_#191C1E)]"></div>
+              <div className="flex flex-col h-full justify-between">
+                <div className="mx-8 mt-7 flex gap-5 items-center">
+                  <div className="z-200">
+                    <Image
+                      src="/images/logo.svg"
+                      className="rounded-lg select-none z-140"
+                      alt="logo"
+                      width={70}
+                      height={70}
+                    />
                   </div>
-                )}
-              </div>
-              <div
-                className={`${poppins.className} text-md font-medium text-[#45464D]`}
-              >
-                {!authType ? (
-                  <div>SignUp to your DevLog Account</div>
-                ) : (
-                  <div>LogIn to your DevLog Account</div>
-                )}
-              </div>
-            </div>
-            <div className="flex">
-              <Link href="/">
-                <X
-                  className="hover:scale-[115%]  transition-all cursor-pointer rounded-full text-black"
-                  size={24}
-                />
-              </Link>
-            </div>
-          </div>
-          <div className="mt-7 w-full flex  justify-center">
-            <div
-              className={`flex text-xl sm:text-2xl bg-[#191C1E]  rounded-4xl ${lato.className}`}
-            >
-              <button
-                type="button"
-                onClick={() => switchMode("signup")}
-                className={`transition-all duration-300 cursor-pointer ${!authType ? "bg-[#00687A] text-white" : "text-white"}  px-8  sm:px-16 py-2 sm:py-3 rounded-4xl`}
-              >
-                SIGNUP
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode("login")}
-                className={`${authType ? "bg-[#00687A]  text-white" : "text-white"} px-8 cursor-pointer sm:px-16 rounded-4xl transition-all duration-300  py-2 sm:py-3`}
-              >
-                LOGIN
-              </button>
-            </div>
-          </div>
-          {authType ? (
-            <div className="mt-4 select-none  flex flex-col gap-6 w-full  sm:max-w-[520px]  sm:mx-auto px-5">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="" className={`${poppins.className}`}>
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2 " />
-                  <input
-                    type="text"
-                    value={email}
-                    placeholder="johndoe@gmail.com"
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`border-1 pr-3 w-full ${lato.className} text-[#191C1E]  rounded-sm placeholder:text-[#6B7280] text-lg border-[#6B7280] p-2`}
-                    onBlur={() => {
-                      (setTouched((prev) => ({
-                        ...prev,
-                        email: true,
-                      })),
-                        validator("email", email));
-                    }}
-                  />
-                </div>
-                <div>
-                  {touched.email && error.email && (
-                    <div
-                      className={`absolute text-sm text-red-500 ${lato.className}`}
-                    >
-                      *{error.email}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="" className={`${poppins.className} text-md`}>
-                  Password
-                </label>
-                <div className="relative">
                   <div
-                    onClick={togglePassword}
-                    className="absolute cursor-pointer right-3 -translate-x-2 top-1/2 -translate-y-1/2"
+                    className={`${lato.className} z-40 text-4xl text-white font-bold uppercase tracking-widest`}
                   >
-                    {toggleEye ? (
-                      <Eye className="cursor-pointer" />
+                    DevLog
+                  </div>
+                </div>
+
+                <div
+                  className={`${lato.className} text-2xl z-40 font-light text-white m-12`}
+                >
+                  A place for developer to grow together.
+                </div>
+              </div>
+            </div>
+            <div className=" py-5 w-full md:w-[34vw] md:min-w-[500px]">
+              <div className="flex  mt-6 mx-5 items-start justify-between ">
+                <div className="flex flex-col gap-1 text-left">
+                  <div
+                    className={`${poppins.className} text-[#191C1E]  text-3xl font-semibold`}
+                  >
+                    {!authType ? (
+                      <div className="transition-all duration-300">Welcome</div>
                     ) : (
-                      <EyeOff className="cursor-pointer" />
+                      <div className="transition-all duration-300">
+                        Welcome Back
+                      </div>
                     )}
                   </div>
-                  <input
-                    type={toggleEye ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••••••"
-                    className={`border-1 ${lato.className} pr-8 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2 border-[#6B7280]`}
-                  />
-                </div>
-              </div>
-              <motion.button
-                disabled={!isLoginFormValid}
-                whileHover={{ scale: 0.98 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={handleAuth}
-                type="button"
-                className={`flex mt-4 justify-center rounded-lg text-2xl p-2 cursor-pointer bg-[#191C1E] text-white disabled:cursor-not-allowed disabled:bg-[#191c1e4d]`}
-              >
-                <div
-                  className={`${poppins.className} font-semibold tracking-widest`}
-                >
-                  {loading ? <Loader2 className="animate-spin" /> : "LOGIN"}
-                </div>
-              </motion.button>
-
-              <div className="flex sm:flex-row flex-col justify-center sm:gap-4 gap-6 mt-2">
-                <motion.button
-                  whileHover={{ scale: 0.98 }}
-                  whileTap={{ scale: 0.99 }}
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      setSocialLoading2(true);
-                      await signIn.social({
-                        provider: "google",
-                      });
-                    } finally {
-                      setSocialLoading2(false);
-                    }
-                  }}
-                  className={`${socialLoading ? "pointer-events-none cursor-not-allowed scale-[98%]" : ""}  transition-all duration-300 cursor-pointer  flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4`}
-                >
-                  {socialLoading2 ? (
-                    <Loader2 className="animate-spin text-[#00687A]" />
-                  ) : (
-                    <>
-                      <span>
-                        <Image
-                          src={"/images/google.svg"}
-                          alt="Google Svg"
-                          width={30}
-                          height={30}
-                        />
-                      </span>
-                      <span>Login with Google</span>
-                    </>
-                  )}
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 0.98 }}
-                  type="button"
-                  disabled={socialLoading}
-                  whileTap={{ scale: 0.99 }}
-                  onClick={async () => {
-                    try {
-                      setSocialLoading(true);
-                      await signIn.social({
-                        provider: "github",
-                      });
-                    } finally {
-                      setSocialLoading(false);
-                    }
-                  }}
-                  className="flex justify-center cursor-pointer items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
-                >
-                  {socialLoading? (
-                    <Loader2 className="animate-spin text-[#00687A]" />
-                  ) : (
-                    <>
-                      <span>
-                        <Image
-                          src={"/images/github.svg"}
-                          alt="Github Svg"
-                          width={30}
-                          height={30}
-                        />
-                      </span>
-                      <span>Login with Github</span>
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </div>
-          ) : (
-            <form action="">
-              <div className="mt-4 select-none  flex flex-col gap-6 mx-5">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="" className={`${poppins.className} text-md`}>
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2" />
-
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="John Doe"
-                      onBlur={() => {
-                        setTouched((prev) => ({
-                          ...prev,
-                          name: true,
-                        }));
-                        validator("name", name);
-                      }}
-                      className={`border-1 pl-3  pr-12 w-full ${lato.className}  text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 border-[#6B7280] p-2`}
-                    />
-                    <div className="relative">
-                      {touched.name && error.name && (
-                        <div
-                          className={`${lato.className} text-sm text-red-500 absolute`}
-                        >
-                          *{error.name}
-                        </div>
-                      )}
-                    </div>
+                  <div
+                    className={`${poppins.className} text-md font-medium text-[#45464D]`}
+                  >
+                    {!authType ? (
+                      <div>SignUp to your DevLog Account</div>
+                    ) : (
+                      <div>LogIn to your DevLog Account</div>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-2 flex-col">
-                  <label className={`${poppins.className} text-md `}>
-                    Email
-                  </label>
-                  <div className="relative ">
-                    <Mail className="absolute right-3 top-1/2 -translate-x-2  -translate-y-1/2" />
-                    <input
-                      type="email"
-                      placeholder="johndoe@abc.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={`border-1 pr-12 ${lato.className} pl-3 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-[#6B7280] p-2 `}
-                      onBlur={() => {
-                        setTouched((prev) => ({
-                          ...prev,
-                          email: true,
-                        }));
-                        validator("email", email);
-                      }}
+                <div className="flex">
+                  <Link href="/">
+                    <X
+                      className="hover:scale-[115%]  transition-all cursor-pointer rounded-full text-black"
+                      size={24}
                     />
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-7 w-full flex  justify-center">
+                <div
+                  className={`flex text-xl sm:text-2xl bg-[#191C1E]  rounded-4xl ${lato.className}`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => switchMode("signup")}
+                    className={`transition-all duration-300 cursor-pointer ${!authType ? "bg-[#00687A] text-white" : "text-white"}  px-8  sm:px-16 py-2 sm:py-3 rounded-4xl`}
+                  >
+                    SIGNUP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => switchMode("login")}
+                    className={`${authType ? "bg-[#00687A]  text-white" : "text-white"} px-8 cursor-pointer sm:px-16 rounded-4xl transition-all duration-300  py-2 sm:py-3`}
+                  >
+                    LOGIN
+                  </button>
+                </div>
+              </div>
+              {authType ? (
+                <div className="mt-4 select-none  flex flex-col gap-6 w-full  sm:max-w-[520px]  sm:mx-auto px-5">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="" className={`${poppins.className}`}>
+                      Email
+                    </label>
                     <div className="relative">
+                      <Mail className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2 " />
+                      <input
+                        type="text"
+                        value={email}
+                        placeholder="johndoe@gmail.com"
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={`border-1 pr-3 w-full ${lato.className} text-[#191C1E]  rounded-sm placeholder:text-[#6B7280] text-lg border-[#6B7280] p-2`}
+                        onBlur={() => {
+                          (setTouched((prev) => ({
+                            ...prev,
+                            email: true,
+                          })),
+                            validator("email", email));
+                        }}
+                      />
+                    </div>
+                    <div>
                       {touched.email && error.email && (
                         <div
-                          className={`absolute ${lato.className} text-sm text-red-500`}
+                          className={`absolute text-sm text-red-500 ${lato.className}`}
                         >
                           *{error.email}
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
-                <div className="flex gap-4 sm:gap-8 items-center  justify-start ">
-                  <div className="flex gap-2 flex-col">
-                    <label className={`${poppins.className} `}>Password</label>
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor=""
+                      className={`${poppins.className} text-md`}
+                    >
+                      Password
+                    </label>
                     <div className="relative">
                       <div
                         onClick={togglePassword}
-                        className="absolute right-0 cursor-pointer overflow-hidden  text-[#191C1E] top-1/2 -translate-x-2 -translate-y-1/2"
+                        className="absolute cursor-pointer right-3 -translate-x-2 top-1/2 -translate-y-1/2"
                       >
-                        {toggleEye ? <Eye /> : <EyeOff />}
+                        {toggleEye ? (
+                          <Eye className="cursor-pointer" />
+                        ) : (
+                          <EyeOff className="cursor-pointer" />
+                        )}
                       </div>
                       <input
-                        className={` ${lato.className} text-[#191C1E] pr-8 w-full  rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2  border-[#6B7280]`}
                         type={toggleEye ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder={"••••••••••••••••"}
-                        onBlur={() => {
-                          setTouched((prev) => ({
-                            ...prev,
-                            password: true,
-                          }));
-                          validator("password", password);
-                        }}
-                      />
-                      <div className="relative">
-                        {touched.password && error.password && (
-                          <div
-                            className={`${lato.className} text-sm absolute text-red-500 `}
-                          >
-                            *{error.password}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 flex-col">
-                    <label htmlFor="">Confirm Password</label>
-                    <div className="relative">
-                      <div
-                        onClick={confirmTogglePassword}
-                        className="absolute cursor-pointer  right-0 overflow-hidden text-[#191C1E] top-1/2 -translate-x-2 -translate-y-1/2"
-                      >
-                        {confirmtoggleEye ? (
-                          <Eye className="transition-all duration-400" />
-                        ) : (
-                          <EyeOff className="transition-all duration-400" />
-                        )}
-                      </div>
-                      <input
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`border-1 ${lato.className} pr-8 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2 border-[#6B7280]`}
-                        type={confirmtoggleEye ? "text" : "password"}
                         placeholder="••••••••••••••••"
-                        onBlur={() => {
-                          setTouched((prev) => ({
-                            ...prev,
-                            confirmPassword: true,
-                          }));
-                          validator("confirmPassword", confirmPassword);
-                        }}
+                        className={`border-1 ${lato.className} pr-8 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2 border-[#6B7280]`}
                       />
-                      <div className="relative">
-                        {touched.confirmPassword && error.confirmPassword && (
-                          <div
-                            className={`absolute text-red-500 text-sm ${lato.className} `}
-                          >
-                            *{error.confirmPassword}
-                          </div>
-                        )}
-                      </div>
                     </div>
                   </div>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 0.98 }}
-                  whileTap={{ scale: 0.99 }}
-                  disabled={!isSignInFormValid}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAuth();
-                  }}
-                  type="button"
-                  className={`bg-[#191C1E] p-2 text-2xl font-semibold mt-4 text-white flex justify-center rounded-lg disabled:bg-[#191c1e4d] disabled:cursor-not-allowed`}
-                >
-                  <div className={`${poppins.className}`}>
-                    {loading ? <Loader2 className="animate-spin" /> : "SIGN UP"}
-                  </div>
-                </motion.button>
-                <div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
                   <motion.button
-                  type="button"
-                    disabled={socialSignInLoading}
+                    disabled={!isLoginFormValid}
                     whileHover={{ scale: 0.98 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={async () => {
-                      try {
-                        setSocialSignInLoading(true);
-                        await signIn.social({
-                          provider: "google",
-                        });
-                      } finally {
-                        setSocialSignInLoading(false);
-                      }
-                    }}
-                    className={`flex justify-center cursor-pointer items-center w-full rounded-lg border-1  p-2 text-center gap-4 ${socialSignInLoading ? "cursor-not-allowed" : ""}`}
+                    onClick={handleAuth}
+                    type="button"
+                    className={`flex mt-4 justify-center rounded-lg text-2xl p-2 cursor-pointer bg-[#191C1E] text-white disabled:cursor-not-allowed disabled:bg-[#191c1e4d]`}
                   >
-                    {socialSignInLoading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <>
-                        <span>
-                          <Image
-                            src={"/images/google.svg"}
-                            alt="google"
-                            width={30}
-                            height={30}
-                          />
-                        </span>
-                        <span>SignUp with Google</span>
-                      </>
-                    )}
+                    <div
+                      className={`${poppins.className} font-semibold tracking-widest`}
+                    >
+                      {loading ? <Loader2 className="animate-spin" /> : "LOGIN"}
+                    </div>
                   </motion.button>
 
-                  <motion.button
-                  type="button"
-                    whileHover={{ scale: 0.99 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={async () => {
-                      try {
-                        setSocialSignInLoading2(true);
-                        await signIn.social({
-                          provider: "github",
-                        });
-                      } finally {
-                        setSocialSignInLoading2(false);
-                      }
-                    }}
-                    className={`${socialSignInLoading2 ? "cursor-not-allowed" : ""} flex cursor-pointer justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4`}
-                  >
-                    {socialSignInLoading2 ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <>
-                        <span>
-                          <Image
-                            src={"/images/github.svg"}
-                            alt="github"
-                            width={30}
-                            height={30}
-                          />
-                        </span>{" "}
-                        <span>SignUp with Github</span>
-                      </>
-                    )}
-                  </motion.button>
+                  <div className="flex sm:flex-row flex-col justify-center sm:gap-4 gap-6 mt-2">
+                    <motion.button
+                      whileHover={{ scale: 0.98 }}
+                      whileTap={{ scale: 0.99 }}
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          setSocialLoading2(true);
+                          await signIn.social({
+                            provider: "google",
+                            callbackURL: "/?toast=google-login-success"
+                          });
+                          
+                        } finally {
+                          setSocialLoading2(false);
+                        }
+                      }}
+                      className={`${socialLoading ? "pointer-events-none cursor-not-allowed scale-[98%]" : ""}  transition-all duration-300 cursor-pointer  flex justify-center items-center w-full rounded-lg md text-center border-1  p-2 gap-4`}
+                    >
+                      {socialLoading2 ? (
+                        <Loader2 className="animate-spin text-[#00687A]" />
+                      ) : (
+                        <>
+                          <span>
+                            <Image
+                              src={"/images/google.svg"}
+                              alt="Google Svg"
+                              width={30}
+                              height={30}
+                            />
+                          </span>
+                          <span>Login with Google</span>
+                        </>
+                      )}
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 0.98 }}
+                      type="button"
+                      disabled={socialLoading}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={async () => {
+                        try {
+                          setSocialLoading(true);
+                          await signIn.social({
+                            provider: "github",
+                            callbackURL :"/?toast=github-login-success"
+                          });
+                        } finally {
+                          setSocialLoading(false);
+                        }
+                      }}
+                      className="flex justify-center cursor-pointer items-center w-full rounded-lg md text-center border-1  p-2 gap-4"
+                    >
+                      {socialLoading ? (
+                        <Loader2 className="animate-spin text-[#00687A]" />
+                      ) : (
+                        <>
+                          <span>
+                            <Image
+                              src={"/images/github.svg"}
+                              alt="Github Svg"
+                              width={30}
+                              height={30}
+                            />
+                          </span>
+                          <span>Login with Github</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
                 </div>
-              </div>
-            </form>
-          )}
+              ) : (
+                <form action="">
+                  <div className="mt-4 select-none  flex flex-col gap-6 mx-5">
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor=""
+                        className={`${poppins.className} text-md`}
+                      >
+                        Full Name
+                      </label>
+                      <div className="relative">
+                        <User className="absolute right-3 -translate-x-2 top-1/2 -translate-y-1/2" />
+
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="John Doe"
+                          onBlur={() => {
+                            setTouched((prev) => ({
+                              ...prev,
+                              name: true,
+                            }));
+                            validator("name", name);
+                          }}
+                          className={`border-1 pl-3  pr-12 w-full ${lato.className}  text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 border-[#6B7280] p-2`}
+                        />
+                        <div className="relative">
+                          {touched.name && error.name && (
+                            <div
+                              className={`${lato.className} text-sm text-red-500 absolute`}
+                            >
+                              *{error.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 flex-col">
+                      <label className={`${poppins.className} text-md `}>
+                        Email
+                      </label>
+                      <div className="relative ">
+                        <Mail className="absolute right-3 top-1/2 -translate-x-2  -translate-y-1/2" />
+                        <input
+                          type="email"
+                          placeholder="johndoe@abc.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className={`border-1 pr-12 ${lato.className} pl-3 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-[#6B7280] p-2 `}
+                          onBlur={() => {
+                            setTouched((prev) => ({
+                              ...prev,
+                              email: true,
+                            }));
+                            validator("email", email);
+                          }}
+                        />
+                        <div className="relative">
+                          {touched.email && error.email && (
+                            <div
+                              className={`absolute ${lato.className} text-sm text-red-500`}
+                            >
+                              *{error.email}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-4 sm:gap-8 items-center  justify-start ">
+                      <div className="flex gap-2 flex-col">
+                        <label className={`${poppins.className} `}>
+                          Password
+                        </label>
+                        <div className="relative">
+                          <div
+                            onClick={togglePassword}
+                            className="absolute right-0 cursor-pointer overflow-hidden  text-[#191C1E] top-1/2 -translate-x-2 -translate-y-1/2"
+                          >
+                            {toggleEye ? <Eye /> : <EyeOff />}
+                          </div>
+                          <input
+                            className={` ${lato.className} text-[#191C1E] pr-8 w-full  rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2  border-[#6B7280]`}
+                            type={toggleEye ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder={"••••••••••••••••"}
+                            onBlur={() => {
+                              setTouched((prev) => ({
+                                ...prev,
+                                password: true,
+                              }));
+                              validator("password", password);
+                            }}
+                          />
+                          <div className="relative">
+                            {touched.password && error.password && (
+                              <div
+                                className={`${lato.className} text-sm absolute text-red-500 `}
+                              >
+                                *{error.password}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 flex-col">
+                        <label htmlFor="">Confirm Password</label>
+                        <div className="relative">
+                          <div
+                            onClick={confirmTogglePassword}
+                            className="absolute cursor-pointer  right-0 overflow-hidden text-[#191C1E] top-1/2 -translate-x-2 -translate-y-1/2"
+                          >
+                            {confirmtoggleEye ? (
+                              <Eye className="transition-all duration-400" />
+                            ) : (
+                              <EyeOff className="transition-all duration-400" />
+                            )}
+                          </div>
+                          <input
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className={`border-1 ${lato.className} pr-8 w-full text-[#191C1E] rounded-sm placeholder:text-[#6B7280] text-lg border-1 p-2 border-[#6B7280]`}
+                            type={confirmtoggleEye ? "text" : "password"}
+                            placeholder="••••••••••••••••"
+                            onBlur={() => {
+                              setTouched((prev) => ({
+                                ...prev,
+                                confirmPassword: true,
+                              }));
+                              validator("confirmPassword", confirmPassword);
+                            }}
+                          />
+                          <div className="relative">
+                            {touched.confirmPassword &&
+                              error.confirmPassword && (
+                                <div
+                                  className={`absolute text-red-500 text-sm ${lato.className} `}
+                                >
+                                  *{error.confirmPassword}
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 0.98 }}
+                      whileTap={{ scale: 0.99 }}
+                      disabled={!isSignInFormValid}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAuth();
+                      }}
+                      type="button"
+                      className={`bg-[#191C1E] cursor-pointer p-2 text-2xl font-semibold mt-4 text-white flex justify-center rounded-lg disabled:bg-[#191c1e4d] disabled:cursor-not-allowed`}
+                    >
+                      <div className={`${poppins.className}`}>
+                        {loading ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          "SIGN UP"
+                        )}
+                      </div>
+                    </motion.button>
+                    <div className="flex sm:flex-row flex-col justify-center sm:gap-1 gap-6 mt-2">
+                      <motion.button
+                        type="button"
+                        disabled={socialSignInLoading}
+                        whileHover={{ scale: 0.98 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={async () => {
+                          try {
+                            setSocialSignInLoading(true);
+                            await signIn.social({
+                              provider: "google",
+                              callbackURL :"/?toast=google-signup-success"
+
+                            });
+                          } finally {
+                            setSocialSignInLoading(false);
+                          }
+                        }}
+                        className={`flex justify-center cursor-pointer items-center w-full rounded-lg border-1  p-2 text-center gap-4 ${socialSignInLoading ? "cursor-not-allowed" : ""}`}
+                      >
+                        {socialSignInLoading ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <>
+                            <span>
+                              <Image
+                                src={"/images/google.svg"}
+                                alt="google"
+                                width={30}
+                                height={30}
+                              />
+                            </span>
+                            <span>SignUp with Google</span>
+                          </>
+                        )}
+                      </motion.button>
+
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 0.99 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={async () => {
+                          try {
+                            setSocialSignInLoading2(true);
+                            await signIn.social({
+                              provider: "github",
+                              callbackURL : "/?toast=github-login-success"
+                            });
+                           
+                          } finally {
+                            setSocialSignInLoading2(false);
+                          }
+                        }}
+                        className={`${socialSignInLoading2 ? "cursor-not-allowed" : ""} flex cursor-pointer justify-center w-full rounded-lg items-center text-center p-2 border-1 gap-4`}
+                      >
+                        {socialSignInLoading2 ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <>
+                            <span>
+                              <Image
+                                src={"/images/github.svg"}
+                                alt="github"
+                                width={30}
+                                height={30}
+                              />
+                            </span>{" "}
+                            <span>SignUp with Github</span>
+                          </>
+                        )}
+                      </motion.button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>)}
+      )}
     </>
   );
 }

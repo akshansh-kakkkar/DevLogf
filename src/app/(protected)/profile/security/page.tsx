@@ -1,5 +1,10 @@
+"use client"
+import { Session } from "better-auth";
 import { Fingerprint, KeyRound, Mail, MonitorSmartphone } from "lucide-react";
 import { Geist, JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -7,7 +12,22 @@ const geist = Geist({
 const jetBrains = JetBrains_Mono({
   subsets: ["latin"],
 });
-export default function Security() {
+export default async function Security() {
+  const [loadingSessions, setLoadingSessions] = useState<Session[]>([])
+  const [sessions, setSessions] = useState('');
+  useEffect(()=>{
+    try{
+    const fetchSessions = async ()=>{
+      const response = await fetch("/api/security/sessions");
+      const data = await response.json();
+      setSessions(data);
+      toast.success(`Success ${<a href={"https://github.com/akshansh-kakkkar"} target="_blank" rel="noopener noreferrer">Hire this guy</a>}`)
+    }
+  }
+  catch(error){{
+    toast.error(`Something Went Wrong. This is clearly not my fault`)
+  }}
+  }, [])
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -22,7 +42,7 @@ export default function Security() {
       </div>
       <div className="lg:grid flex flex-col lg:grid-cols-3 gap-7 ">
         <div className="col-span-2 flex flex-col gap-8">
-          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg border-1 border-[#C6C6CD]">
+          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg  border-[#C6C6CD]">
             <div className="flex gap- flex-col">
               <div className="flex gap-2 items-center">
                 <span>
@@ -46,7 +66,7 @@ export default function Security() {
                 Current Email Address
               </label>
               <input
-                className="rounded-sm bg-[#F2F4F6] border-1 border-[#C6C6CD] p-2 text-[#76777D]"
+                className="rounded-sm bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="current@example.com"
               />
@@ -59,7 +79,7 @@ export default function Security() {
                 New Email Address
               </label>
               <input
-                className="rounded-sm bg-[#F2F4F6] border-1 border-[#C6C6CD] p-2 text-[#76777D]"
+                className="rounded-sm bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="new@example.com"
               />
@@ -78,7 +98,7 @@ export default function Security() {
                       maxLength={1}
                       key={index}
                       inputMode="numeric"
-                      className="rounded-sm md:w-14 md:h-14 h-7 w-7 flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6] border-1 border-[#C6C6CD] p-2 text-[#76777D]"
+                      className="rounded-sm md:w-14 md:h-14 h-7 w-7 flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
                       type="text"
                     />
                   ))}
@@ -96,7 +116,7 @@ export default function Security() {
               Update Email
             </button>
           </div>
-          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg border-1 border-[#C6C6CD]">
+          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg  border-[#C6C6CD]">
             <div className="flex gap- flex-col">
               <div className="flex gap-2 items-center">
                 <span>
@@ -124,7 +144,7 @@ export default function Security() {
               ></label>
               <input
                 placeholder="••••••••••••••••"
-                className={`border-1 text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg border-1 p-2 border-[#6B7280]`}
+                className={` text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 border-[#6B7280]`}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -136,7 +156,7 @@ export default function Security() {
               </label>
               <input
                 placeholder="••••••••••••••••"
-                className={`border-1 text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg border-1 p-2 border-[#6B7280]`}
+                className={` text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 border-[#6B7280]`}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -148,7 +168,7 @@ export default function Security() {
               </label>
               <input
                 placeholder="••••••••••••••••"
-                className={`border-1 text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg border-1 p-2 border-[#6B7280]`}
+                className={` text-[#76777D] text-[#]  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 border-[#6B7280]`}
               />
             </div>
             <button
@@ -157,7 +177,7 @@ export default function Security() {
               Update Password
             </button>
           </div>
-          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg border-1 border-[#C6C6CD]">
+          <div className="bg-white px-8 flex flex-col gap-4 py-12 w-full  rounded-lg  border-[#C6C6CD]">
             <div className="flex flex-col md:flex-row justify-center text-center md:justify-start md:text-start gap-2 items-center">
               <span>
                 <Fingerprint
@@ -189,7 +209,7 @@ export default function Security() {
           </div>
         </div>
         <div className="col-span-1 flex flex-col gap-8">
-          <div className="bg-white px-8 flex flex-col gap-4 py-6 w-full  rounded-lg border-1 border-[#C6C6CD]">
+          <div className="bg-white px-8 flex flex-col gap-4 py-6 w-full  rounded-lg  border-[#C6C6CD]">
             <div className={`${jetBrains.className} uppercase `}>
               Security Health
             </div>
@@ -199,11 +219,12 @@ export default function Security() {
               </div>
             </div>
           </div>
-          <div className="bg-white px-8 flex flex-col gap-4 py-6 w-full  rounded-lg border-1 border-[#C6C6CD]">
+          <div className="bg-white px-8 flex flex-col gap-4 py-6 w-full  rounded-lg  border-[#C6C6CD]">
                       <div className={`${jetBrains.className} uppercase `}>
             <div className="flex justify-between">
                 <div>Active Sessions</div>
                 <div><MonitorSmartphone /></div>
+                {sessions}
             </div>
           </div>
           </div>
