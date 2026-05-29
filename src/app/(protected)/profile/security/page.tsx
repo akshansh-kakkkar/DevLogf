@@ -6,8 +6,10 @@ import {
   Loader2,
   Mail,
   MonitorSmartphone,
+  ShieldAlert,
 } from "lucide-react";
 import { Geist, JetBrains_Mono } from "next/font/google";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,9 +19,13 @@ const geist = Geist({
 const jetBrains = JetBrains_Mono({
   subsets: ["latin"],
 });
+type UserSession = Session & {
+  location?: string;
+};
 export default function Security() {
+  const router = useRouter()
   const [loadingSessions, setLoadingSessions] = useState(true);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<UserSession[]>([]);
   useEffect(() => {
     const fetchSessions = async () => {
       try {
@@ -34,7 +40,42 @@ export default function Security() {
     };
     fetchSessions();
   }, []);
-
+  const handleRevokeSessions = async () => {
+    try {
+      const response = await fetch(`/api/security/sessions`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        toast.error(
+          "Failed to revoke sessions. Try refreshing the page this is not my fault.",
+        );
+        return;
+      }
+      if(response.ok){
+        router.push('/')
+      }
+      toast.success(
+        <div>
+          <span> Profile Updated Successfully. </span>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+            href="https://github.com/akshansh-kakkkar"
+          >
+            Hire this smart guy
+          </a>
+        </div>,
+      );
+    } catch (error) {
+      toast.error(`Something Went Wrong. This is clearly not my fault`);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -226,7 +267,7 @@ export default function Security() {
               </div>
             </div>
           </div>
-          <div className="bg-white h-[800px] border px-8 flex flex-col gap-4 py-6 w-full  rounded-lg  border-[#C6C6CD]">
+          <div className="bg-white h-[900px] border px-8 flex flex-col gap-4 py-6 w-full  rounded-lg  border-[#C6C6CD]">
             <div
               className={`${jetBrains.className} uppercase flex flex-col flex-1 gap-4 `}
             >
@@ -242,15 +283,26 @@ export default function Security() {
                   <Loader2
                     className="text-xl animate-spin text-[#00687A]"
                     strokeWidth={2}
+                    size={64}
                   />
                 </div>
               ) : sessions.length === 0 ? (
-                <div>No active sessions</div>
+                <div className="flex flex-1 justify-center items-center text-center flex-col gap-4">
+                  <span>
+                    <ShieldAlert className={`text-[#00687A]`} size={128} />
+                  </span>
+                  <span
+                    className={`${geist.className} text-2xl text-[#191C1E] fontsem`}
+                  >
+                    No Sessions Found
+                  </span>
+                </div>
               ) : (
                 sessions.map((session) => {
+                    const expiredAt = new Date(session.expiresAt) <  new Date()
                   const browser = session.userAgent?.includes("Chrome")
                     ? "Google Chrome"
-                    : session.userAgent?.includes("FireFox")
+                    : session.userAgent?.includes("Firefox")
                       ? "Firefox"
                       : session.userAgent?.includes("Safari")
                         ? "Safari"
@@ -269,30 +321,55 @@ export default function Security() {
                   return (
                     <div key={session.id}>
                       <div className="flex border p-4 flex-col gap-2 rounded-lg justify-between py-4">
-                        <div>{browser}</div>
-                        <div>{device}</div>
-                        <div>{"Session"}</div>
-                        <div>
-                          {new Date(session.createdAt).toLocaleString()}
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`${geist.className} text-[#191C1E] font-semibold`}
+                          >
+                            {device}
+                          </div>
+                          <div
+                            className={`${jetBrains.className} text-[#45464D] bg-[#E0E3E5] rounded-sm px-1.5 py-0.5 text-sm`}
+                          >
+                            {browser}
+                          </div>
+                        </div>
+                        <div className="flex gap-4">
+                          <div
+                            className={`${geist.className} text-[#45464D] text-md lowercase`}
+                          >
+                            {session.location || "Unknown Location"}
+                          </div>
+                          <div
+                            className={`${geist.className} text-md text-[#45464D] lowercase`}
+                          >
+                            {"Session"}
+                          </div>
                         </div>
                         <div>
-                          Expire: {new Date(session.expiresAt).toLocaleString()}
+                          {new Date(session.updatedAt).toLocaleString()}
                         </div>
+                        <div className="flex justify-end">
+                                                  <div className={`text-sm flex justify-end w-fit px-2 py-1 rounded-md  ${expiredAt ? "bg-red-100 text-red-700": "bg-green-100 text-green-700"}`}>
+                           {expiredAt ? "Expired" : "Active"}
+                          </div>
+                          </div>
                       </div>
+                      
                     </div>
                   );
                 })
               )}
             </div>
-                              <div className="flex justify-center py-2 rounded items-center text-center bg-[#BA1A1A]  text-white">
-          <span className={`${jetBrains.className} text-xl`}>
-            Revoke All Sessions
-          </span>
-        </div>
+            <button
+              onClick={handleRevokeSessions}
+              className="flex cursor-pointer justify-center py-2 rounded items-center hover:bg-red-600 transition-all duration-300 text-center bg-[#BA1A1A]  text-white"
+            >
+              <span className={`${jetBrains.className} text-xl`}>
+                Revoke All Sessions
+              </span>
+            </button>
           </div>
-
         </div>
-
       </div>
     </div>
   );
