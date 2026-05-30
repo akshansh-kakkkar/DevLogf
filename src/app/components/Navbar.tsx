@@ -21,7 +21,7 @@ const JetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 export default function Navbar() {
-  const { data: session, refetch } = useSession();
+  const { data: session, isPending } = useSession();
 
   const [isOpen, setIsOpen] = useState(false);
   const Pathname = usePathname();
@@ -136,6 +136,8 @@ export default function Navbar() {
               </DropdownMenu>
             ) : (
               <>
+              {!session && !isPending && (
+                <div>
                 <motion.div
                   className="md:block hidden"
                   whileTap={{ scale: 1.05 }}
@@ -160,6 +162,9 @@ export default function Navbar() {
                     Login
                   </Link>
                 </motion.div>
+                 </div>
+                )}
+               
               </>
             )}
           </div>
@@ -227,7 +232,7 @@ export default function Navbar() {
                       </Link>
                     </li>
 
-                    {!session && (
+                    {!session && !isPending && (
                       <>
                         <div className="flex gap-4">
                           <motion.div

@@ -38,6 +38,10 @@ export default function Security() {
   const [togglePassword, setTogglePassword] = useState(true);
   const [togglePasseyeConfirmnew, setTogglePasseyeConfirmnew] = useState(true);
   const [togglePassEyeNew, setTogglePassEyeNew] = useState(true);
+  const [currentEmail, setCurrentEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false)
   const { data: session } = useSession()
   const toggleEyePass = () => {
     setTogglePassword((prev) => !prev);
@@ -152,7 +156,30 @@ export default function Security() {
       .then((res) => res.json())
       .then((data) => setIsSocialUser(data.isSocialUser));
   }, []);
-
+  const handleChangeEmail = async()=>{
+    if(newEmail !== confirmEmail){
+      toast.error("Emails do not match.");
+      return
+    }
+    try{
+      setIsUpdatingEmail(true);
+      const result = await authClient.changeEmail({
+        newEmail, 
+        callbackURL : "/settings/security"
+      })
+      if(result.error){
+        toast.error("Email failed to update")
+      }
+      toast.success("Verification email sent check your mail box.")
+    }
+    catch(error){
+      toast.error("Something went wrong.")
+      return
+    }
+    finally{
+      setIsUpdatingEmail(false)
+    }
+  }
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -191,6 +218,8 @@ export default function Security() {
                 Current Email Address
               </label>
               <input
+              value={session?.user?.email || ""}
+              readOnly
                 className="rounded-sm bg-[#F2F4F6] border   border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="current@example.com"
@@ -204,6 +233,8 @@ export default function Security() {
                 New Email Address
               </label>
               <input
+              value={newEmail}
+              onChange={(e)=>setNewEmail(e.target.value)}
                 className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="new@example.com"
@@ -217,6 +248,8 @@ export default function Security() {
                 Confirm Email Address
               </label>
               <input
+              value={confirmEmail}
+              onChange={(e)=>setConfirmEmail(e.target.value)}
                 className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="new@example.com"
@@ -394,7 +427,7 @@ export default function Security() {
                         <button
                           onClick={handleChangePassword}
                           disabled={isChangingPassword}
-                          className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
+                          className={`bg-[#00687A] hover:cursor-pointer hover:bg-[#00687a6d] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
                         >
                           {isChangingPassword
                             ? "updating..."

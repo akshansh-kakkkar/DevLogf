@@ -33,6 +33,7 @@ model User {
   bio           String?   @db.Text
   sessions      Session[]
   location      String?
+  emailupdates emailupdate[]
 }
 
 model Post {
@@ -106,4 +107,15 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model emailupdate { 
+  id String @id @default(cuid())
+  userId String
+  newEmail String
+  otp String
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId])
 }
