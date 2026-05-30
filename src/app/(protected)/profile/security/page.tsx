@@ -3,6 +3,8 @@ import { authClient } from "@/lib/auth-client";
 import { Session } from "better-auth";
 import {
   Eye,
+  EyeClosed,
+  EyeOff,
   Fingerprint,
   KeyRound,
   Loader2,
@@ -15,7 +17,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { fa } from "zod/v4/locales";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -34,8 +35,18 @@ export default function Security() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPasswrd, setConfirmNewPasswrd] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [eyetoggle, setEyetoggle] = useState(false)
-  const [togglePassword, setTogglePassword] = useState(false);
+  const [togglePassword, setTogglePassword] = useState(true);
+  const [togglePasseyeConfirmnew, setTogglePasseyeConfirmnew] = useState(true);
+  const [togglePassEyeNew, setTogglePassEyeNew] = useState(true);
+  const toggleEyePass = () => {
+    setTogglePassword((prev) => !prev);
+  };
+  const toggleEyePassNew = () => {
+    setTogglePassEyeNew((prev) => !prev);
+  };
+  const togglePassEyeConfirm = () => {
+    setTogglePasseyeConfirmnew((prev) => !prev);
+  };
   const handleChangePassword = async () => {
     if (newPassword !== confirmNewPasswrd) {
       toast.error("Passwords do not match.");
@@ -132,6 +143,7 @@ export default function Security() {
       .then((res) => res.json())
       .then((data) => setIsSocialUser(data.isSocialUser));
   }, []);
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -252,90 +264,137 @@ export default function Security() {
                   Change Passwsord
                 </span>
               </div>{" "}
-              <div >
-              {loadingSessions ? (
-                <div>
-                  <Loader2 className="animate-spin text-[#00687A] " strokeWidth={2} size={64}  />
-                </div>
-              ) : (
-                <div>
-              {isSocialUser ? (
-                <div className={`${geist.className} flex justify-center flex-col gap-4 items-center text-[#45464D]`}>
-                  <p className="flex w-100 text-center">
-                    This account uses Google or Github Sign-In. Password changes
-                    are managed by your social provider.{" "}
-                  </p>
-                  <div>You need to <Link className="underline" target="_blank" rel="noopener noreferrer" href="https://www.github.com/akshansh-kakkkar">Hire Me</Link> to perform this action xd.</div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <div className={`${geist.className} text-[#45464D] text-md`}>
-                    Ensure your account is using a long , random password to
-                    stay secure.
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor=""
-                      className={`${jetBrains.className} font-[600] text-[#191C1E]`}
-                    >
-                      Current Password
-                    </label>
-                    <input
-                      placeholder="••••••••••••••••"
-                      className={` text-[#76777D] text-[#] border  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      value={currentPassword}
+              <div>
+                {loadingSessions ? (
+                  <div>
+                    <Loader2
+                      className="animate-spin text-[#00687A] "
+                      strokeWidth={2}
+                      size={64}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor=""
-                      className={`${jetBrains.className} font-[600] text-[#191C1E]`}
-                    >
-                      New Password
-                    </label>
-                    <div className="relative w-full">
-                      <Eye className="absolute right-6 top-1/4"/>
-                    <input
-                      placeholder="••••••••••••••••"
-                      className={` text-[#76777D] w-full text-[#] border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2`}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      value={newPassword}
-                    />
-                    </div>
+                ) : (
+                  <div>
+                    {isSocialUser ? (
+                      <div
+                        className={`${geist.className} flex justify-center flex-col gap-4 items-center text-[#45464D]`}
+                      >
+                        <p className="flex w-100 text-center">
+                          This account uses Google or Github Sign-In. Password
+                          changes are managed by your social provider.{" "}
+                        </p>
+                        <div>
+                          You need to{" "}
+                          <Link
+                            className="underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://www.github.com/akshansh-kakkkar"
+                          >
+                            Hire Me
+                          </Link>{" "}
+                          to perform this action xd.
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-4">
+                        <div
+                          className={`${geist.className} text-[#45464D] text-md`}
+                        >
+                          Ensure your account is using a long , random password
+                          to stay secure.
+                        </div>
+                        <div className="flex flex-col select-none gap-2">
+                          <label
+                            htmlFor=""
+                            className={`${jetBrains.className}  font-[600] text-[#191C1E]`}
+                          >
+                            Current Password
+                          </label>
+                          <div className="relative w-full">
+                            <div onClick={toggleEyePass}>
+                              {togglePassword ? (
+                                <EyeOff className="absolute right-4 top-1/4" />
+                              ) : (
+                                <Eye className="absolute right-4 top-1/4" />
+                              )}
+                            </div>
+
+                            <input
+                              placeholder="••••••••••••••••"
+                              className={` text-[#76777D] text-[#76777D] w-full border  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
+                              onChange={(e) =>
+                                setCurrentPassword(e.target.value)
+                              }
+                              value={currentPassword}
+                              type={togglePassword ? "password" : "text"}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col select-none gap-2">
+                          <label
+                            htmlFor=""
+                            className={`${jetBrains.className} font-[600] text-[#191C1E]`}
+                          >
+                            New Password
+                          </label>
+                          <div className="relative w-full">
+                            <div onClick={toggleEyePassNew}>
+                              {togglePassEyeNew ? (
+                                <EyeOff className="absolute right-4 top-1/4" />
+                              ) : (
+                                <Eye className="absolute right-4 top-1/4" />
+                              )}
+                            </div>
+                            <input
+                              placeholder="••••••••••••••••"
+                              className={` text-[#76777D] w-full text-[#] border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2`}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              value={newPassword}
+                              type={togglePassEyeNew ? "password" : "text"}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex select-none flex-col gap-2">
+                          <label
+                            htmlFor=""
+                            className={`${jetBrains.className} font-[600] text-[#191C1E]`}
+                          >
+                            Confirm New Passowrd
+                          </label>
+                          <div className="w-full relative" >
+                            <div onClick={togglePassEyeConfirm}>
+                            {togglePasseyeConfirmnew ? (
+                            <EyeOff className="absolute right-4  top-1/4" />
+                            ) : (
+                            <Eye className="absolute right-4  top-1/4" />
+
+                            )}
+                            </div>
+                            <input
+                              placeholder="••••••••••••••••"
+                              type={togglePasseyeConfirmnew ? "password" : "text"}
+                              className={` text-[#76777D] pr-14 text-[#] w-full border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
+                              onChange={(e) => {
+                                setConfirmNewPasswrd(e.target.value);
+                              }}
+                              value={confirmNewPasswrd}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleChangePassword}
+                          disabled={isChangingPassword}
+                          className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
+                        >
+                          {isChangingPassword
+                            ? "updating..."
+                            : "Update Password"}
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <label
-                      htmlFor=""
-                      className={`${jetBrains.className} font-[600] text-[#191C1E]`}
-                    >
-                      Confirm New Passowrd
-                    </label>
-                    <div className="w-full relative">
-                      <Eye className="absolute right-6  top-1/4"/>
-                    <input
-                      placeholder="••••••••••••••••"
-                      type
-                      className={` text-[#76777D] pr-14 text-[#] w-full border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
-                      onChange={(e) => {
-                        setConfirmNewPasswrd(e.target.value);
-                      }}
-                      value={confirmNewPasswrd}
-                    />
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleChangePassword}
-                    disabled={isChangingPassword}
-                    className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
-                  >
-                    {isChangingPassword ? "updating..." : "Update Password"}
-                  </button>
-                </div>
-                
-              )}
-              </div>
-              )}
+                )}
               </div>
             </div>
           </div>
