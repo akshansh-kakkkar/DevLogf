@@ -1,6 +1,6 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
-import { Session } from "better-auth";
+import { authClient, useSession } from "@/lib/auth-client";
+import { email, Session } from "better-auth";
 import {
   Eye,
   EyeClosed,
@@ -38,6 +38,7 @@ export default function Security() {
   const [togglePassword, setTogglePassword] = useState(true);
   const [togglePasseyeConfirmnew, setTogglePasseyeConfirmnew] = useState(true);
   const [togglePassEyeNew, setTogglePassEyeNew] = useState(true);
+  const { data: session } = useSession()
   const toggleEyePass = () => {
     setTogglePassword((prev) => !prev);
   };
@@ -59,6 +60,14 @@ export default function Security() {
         newPassword,
         revokeOtherSessions: true,
       });
+      await fetch("/api/security/passwordchanged", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", },
+        body: JSON.stringify({
+          email: session?.user?.email
+        })
+
+      })
       if (result.error) {
         toast.error(result.error.message);
         return;
@@ -266,7 +275,7 @@ export default function Security() {
               </div>{" "}
               <div>
                 {loadingSessions ? (
-                  <div>
+                  <div className="flex flex-col justify-center items-center text-center">
                     <Loader2
                       className="animate-spin text-[#00687A] "
                       strokeWidth={2}
@@ -364,12 +373,12 @@ export default function Security() {
                           </label>
                           <div className="w-full relative" >
                             <div onClick={togglePassEyeConfirm}>
-                            {togglePasseyeConfirmnew ? (
-                            <EyeOff className="absolute right-4  top-1/4" />
-                            ) : (
-                            <Eye className="absolute right-4  top-1/4" />
+                              {togglePasseyeConfirmnew ? (
+                                <EyeOff className="absolute right-4  top-1/4" />
+                              ) : (
+                                <Eye className="absolute right-4  top-1/4" />
 
-                            )}
+                              )}
                             </div>
                             <input
                               placeholder="••••••••••••••••"
