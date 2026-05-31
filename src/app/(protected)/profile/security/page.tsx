@@ -41,8 +41,9 @@ export default function Security() {
   const [currentEmail, setCurrentEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false)
-  const { data: session } = useSession()
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const { data: session } = useSession();
   const toggleEyePass = () => {
     setTogglePassword((prev) => !prev);
   };
@@ -53,6 +54,10 @@ export default function Security() {
     setTogglePasseyeConfirmnew((prev) => !prev);
   };
   const handleChangePassword = async () => {
+    if (newPassword === currentPassword) {
+      toast.error("new password should not match current password.");
+      return;
+    }
     if (newPassword !== confirmNewPasswrd) {
       toast.error("Passwords do not match.");
       return;
@@ -66,12 +71,11 @@ export default function Security() {
       });
       await fetch("/api/security/passwordchanged", {
         method: "POST",
-        headers: { "Content-Type": "application/json", },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: session?.user?.email
-        })
-
-      })
+          email: session?.user?.email,
+        }),
+      });
       if (result.error) {
         toast.error(result.error.message);
         return;
@@ -156,30 +160,53 @@ export default function Security() {
       .then((res) => res.json())
       .then((data) => setIsSocialUser(data.isSocialUser));
   }, []);
-  const handleChangeEmail = async()=>{
-    if(newEmail !== confirmEmail){
-      toast.error("Emails do not match.");
-      return
+
+  const handleChangeEmail = async () => {
+    const response = await fetch("/api/security/verifyemailotp", {
+    method : "POST",
+    headers : {
+      "Content-Type" : "application/json"
+    },
+    body : JSON.stringify({
+      newEmail, 
+      otp,
+    }),
+    })
+    if(!response.ok){
+      toast.error("Invalid OTP");
+      return;
     }
-    try{
-      setIsUpdatingEmail(true);
       const result = await authClient.changeEmail({
-        newEmail, 
-        callbackURL : "/settings/security"
-      })
-      if(result.error){
-        toast.error("Email failed to update")
+        newEmail,
+        callbackURL: "/settings/security",
+      });
+      if (result.error) {
+        toast.error("Email failed to update");
       }
-      toast.success("Verification email sent check your mail box.")
+      toast.success("Verification email sent check your mail box.");
+
+  };
+  const handleSendOtp = async () => {
+    if (newEmail !== confirmEmail) {
+      toast.error("Emails do not match.");
+      return;
     }
-    catch(error){
-      toast.error("Something went wrong.")
-      return
+    const response = await fetch("/api/security/sendemailotp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newEmail,
+      }),
+    });
+    if (!response.ok) {
+      toast.error("Can't send the otp this is not my fault :(");
     }
-    finally{
-      setIsUpdatingEmail(false)
+    if (response.ok) {
+      toast.success("OTP Sent");
     }
-  }
+  };
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -218,8 +245,8 @@ export default function Security() {
                 Current Email Address
               </label>
               <input
-              value={session?.user?.email || ""}
-              readOnly
+                value={session?.user?.email || ""}
+                readOnly
                 className="rounded-sm bg-[#F2F4F6] border   border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="current@example.com"
@@ -233,8 +260,8 @@ export default function Security() {
                 New Email Address
               </label>
               <input
-              value={newEmail}
-              onChange={(e)=>setNewEmail(e.target.value)}
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
                 className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="new@example.com"
@@ -248,8 +275,8 @@ export default function Security() {
                 Confirm Email Address
               </label>
               <input
-              value={confirmEmail}
-              onChange={(e)=>setConfirmEmail(e.target.value)}
+                value={confirmEmail}
+                onChange={(e) => setConfirmEmail(e.target.value)}
                 className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
                 type="text"
                 placeholder="new@example.com"
@@ -263,21 +290,20 @@ export default function Security() {
               >
                 One Time Password (OTP)
               </label>
-              <div className="flex gap-4">
-                <div className="flex items-center gap-3">
-                  {[1, 2, 3, 4].map((_, index) => (
+              <div className="flex gap-2 md:gap-4">
+                <div className="flex items-center gap-1 md:gap-3">
                     <input
-                      maxLength={1}
-                      key={index}
+                      onChange={()=> {
+                        const newOtp 
+                      }}
+                      value={otp}
                       inputMode="numeric"
                       className="rounded-sm md:w-14 md:h-14 h-7 w-7 border flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
                       type="text"
                     />
-                  ))}
                 </div>
                 <button
-                  disabled={isChangingPassword}
-                  onClick={handleChangePassword}
+                  onClick={handleSendOtp}
                   className={`border-[#00687A] border-2 md:px-8 py-1 px-2 font-bold md:py-2 text-[#00687A] text-sm md:text-xl rounded-sm text-md w-fit ${jetBrains.className}`}
                 >
                   SEND
@@ -285,6 +311,7 @@ export default function Security() {
               </div>
             </div>
             <button
+              onClick={handleChangeEmail}
               className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
             >
               Update Email
@@ -404,18 +431,19 @@ export default function Security() {
                           >
                             Confirm New Passowrd
                           </label>
-                          <div className="w-full relative" >
+                          <div className="w-full relative">
                             <div onClick={togglePassEyeConfirm}>
                               {togglePasseyeConfirmnew ? (
                                 <EyeOff className="absolute right-4  top-1/4" />
                               ) : (
                                 <Eye className="absolute right-4  top-1/4" />
-
                               )}
                             </div>
                             <input
                               placeholder="••••••••••••••••"
-                              type={togglePasseyeConfirmnew ? "password" : "text"}
+                              type={
+                                togglePasseyeConfirmnew ? "password" : "text"
+                              }
                               className={` text-[#76777D] pr-14 text-[#] w-full border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
                               onChange={(e) => {
                                 setConfirmNewPasswrd(e.target.value);
@@ -466,9 +494,10 @@ export default function Security() {
               recommended.
             </div>
             <button
-              className={`bg-[#191C1E] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
+            onClick={()=>toast.error("This Feature is currently not available.")}
+              className={`bg-[#191C1E] px-5 py-3 cursor-pointer transition-all duration-300 hover:bg-[#3c3e40] text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
             >
-              Enable{" "}
+              Coming Soon{" "}
             </button>
           </div>
         </div>

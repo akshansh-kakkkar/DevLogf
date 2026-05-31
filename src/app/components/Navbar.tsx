@@ -137,7 +137,7 @@ export default function Navbar() {
             ) : (
               <>
               {!session && !isPending && (
-                <div>
+                <div className="flex gap-4 items-center">
                 <motion.div
                   className="md:block hidden"
                   whileTap={{ scale: 1.05 }}
