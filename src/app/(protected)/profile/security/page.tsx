@@ -15,7 +15,7 @@ import {
 import { Geist, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const geist = Geist({
@@ -41,9 +41,18 @@ export default function Security() {
   const [currentEmail, setCurrentEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const { data: session } = useSession();
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
   const toggleEyePass = () => {
     setTogglePassword((prev) => !prev);
   };
@@ -104,6 +113,7 @@ export default function Security() {
       setIsChangingPassword(false);
     }
   };
+
   useEffect(() => {
     const fetchSessions = async () => {
       try {
@@ -162,51 +172,89 @@ export default function Security() {
   }, []);
 
   const handleChangeEmail = async () => {
-    const OtpValue = otp.join('');
+    try{
+    setIsUpdatingEmail(true)
+    const OtpValue = otp.join("");
     const response = await fetch("/api/security/verifyemailotp", {
-    method : "POST",
-    headers : {
-      "Content-Type" : "application/json"
-    },
-    body : JSON.stringify({
-      newEmail, 
-      otp: OtpValue,
-    }),
-    })
-    if(!response.ok){
-      toast.error("Invalid OTP");
-      return;
-    }
-    
-    toast.success("Email updated successfully.");
-    setNewEmail("");
-    setConfirmEmail("");
-    setOtp(["", "", "", "", "", ""]);
-    router.refresh();
-  };
-  const handleSendOtp = async () => {
-    if (newEmail !== confirmEmail) {
-      toast.error("Emails do not match.");
-      return;
-    }
-    const OtpValue = otp.join('');
-    const response = await fetch("/api/security/sendemailotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         newEmail,
-        otp : OtpValue
+        otp: OtpValue,
       }),
     });
     if (!response.ok) {
-      toast.error("Can't send the otp this is not my fault :(");
+      toast.error("Invalid OTP");
+      return;
     }
-    if (response.ok) {
-      toast.success("OTP Sent");
+
+    toast.success("Email updated successfully.");
+    setNewEmail("");
+    setConfirmEmail("");
+    setOtp(["", "", "", "", "", ""]);
+    window.location.reload()
+  }
+  catch(error){
+    return toast.error("Something went wrong this is not my fault try to refresh.")
+  }
+  finally{
+    setIsUpdatingEmail(false)
+  }
+  };
+  const handleSendOtp = async () => {
+    try {
+      setIsSendingOtp(true);
+      if (newEmail !== confirmEmail) {
+        toast.error("Emails do not match.");
+        return;
+      }
+      const OtpValue = otp.join("");
+      const response = await fetch("/api/security/sendemailotp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newEmail,
+          otp: OtpValue,
+        }),
+      });
+      if (!response.ok) {
+        toast.error("Can't send the otp this is not my fault :(");
+      }
+      if (response.ok) {
+        toast.success("OTP Sent");
+        setCooldown(60)
+      }
+
+    } catch (error) {
+      return toast.error("OTP failed to send.");
+    } finally {
+      setIsSendingOtp(false);
     }
   };
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d?$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      const previousInput = document.getElementById(`otp-${index - 1}`);
+      previousInput?.focus();
+    }
+  };
+  const isCompleteOtp = otp.every((digit)=> digit !== "")
   return (
     <div className="flex flex-col gap-8">
       <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
@@ -292,37 +340,37 @@ export default function Security() {
               </label>
               <div className="flex gap-2 md:gap-4">
                 <div className="flex items-center gap-1 md:gap-3">
-                  {otp.map((digit, index)=>(
-                    
+                  {otp.map((digit, index) => (
                     <input
-                    key={index}
-                    value={digit}
-                    maxLength={1}
-                    inputMode="numeric"
-                    onChange={(e)=>{
-                      const newOtp = [...otp]
-                      newOtp[index] = e.target.value;
-                      setOtp(newOtp)
-                    }}
+                      key={index}
+                      id={`otp-${index}`}
+                      value={digit}
+                      maxLength={1}
+                      inputMode="numeric"
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
                       className="rounded-sm md:w-14 md:h-14 h-7 w-7 border flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
                       type="text"
                     />
                   ))}
                 </div>
                 <button
+                  disabled={isSendingOtp || cooldown > 0}
                   onClick={handleSendOtp}
-                  className={`border-[#00687A] border-2 md:px-8 py-1 px-2 font-bold md:py-2 text-[#00687A] text-sm md:text-xl rounded-sm text-md w-fit ${jetBrains.className}`}
+
+                  className={`border-[#00687A] border-2 md:px-8 py-1 px-2 font-bold md:py-2 text-[#00687A] text-sm md:text-xl rounded-sm text-md w-fit ${jetBrains.className} ${isSendingOtp || cooldown > 0 ? "opacity-50 cursor-not-allowed" : " hover:cursor-pointer hover:bg-[#00687A] hover:text-[#ffffff]"}`}
                 >
-                  SEND
+                  {isSendingOtp ? "Sending" : cooldown > 0 ? `${cooldown}s` : "SEND"}
+
                 </button>
               </div>
             </div>
             <button
-              onClick={handleChangeEmail}
-              className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
+              onClick={ handleChangeEmail}
+              disabled={!isCompleteOtp ||isUpdatingEmail}
+              className={`bg-[#00687A] px-5 py-3 text-white rounded-sm text-xl transition-all w-fit ${jetBrains.className} ${isUpdatingEmail || !isCompleteOtp ? "opacity-50 cursor-not-allowed" : "hover:bg-[#00687a94] hover:cursor-pointer"}`}
             >
-              Update Email
-            </button>
+              {isUpdatingEmail ? "Updating..." : "Update Email"}            </button>
           </div>
           <div className="bg-white border px-8 flex flex-col gap-4 py-12 w-full  rounded-lg  border-[#C6C6CD]">
             <div className="flex gap-4 flex-col">
@@ -501,7 +549,9 @@ export default function Security() {
               recommended.
             </div>
             <button
-            onClick={()=>toast.error("This Feature is currently not available.")}
+              onClick={() =>
+                toast.error("This Feature is currently not available.")
+              }
               className={`bg-[#191C1E] px-5 py-3 cursor-pointer transition-all duration-300 hover:bg-[#3c3e40] text-white rounded-sm text-xl w-fit ${jetBrains.className}`}
             >
               Coming Soon{" "}
