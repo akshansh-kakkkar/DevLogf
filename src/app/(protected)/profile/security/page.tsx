@@ -295,7 +295,7 @@ export default function Security() {
               <input
                 value={session?.user?.email || ""}
                 readOnly
-                className="rounded-sm bg-[#F2F4F6] border   border-[#C6C6CD] p-2 text-[#76777D]"
+                className="rounded-sm bg-[#F2F4F6] border   border-[#C6C6CD] p-2 "
                 type="text"
                 placeholder="current@example.com"
               />
@@ -310,7 +310,7 @@ export default function Security() {
               <input
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
+                className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2]"
                 type="text"
                 placeholder="new@example.com"
               />
@@ -325,7 +325,7 @@ export default function Security() {
               <input
                 value={confirmEmail}
                 onChange={(e) => setConfirmEmail(e.target.value)}
-                className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 text-[#76777D]"
+                className="rounded-sm bg-[#F2F4F6] border border-[#C6C6CD] p-2 ]"
                 type="text"
                 placeholder="new@example.com"
               />
@@ -349,7 +349,7 @@ export default function Security() {
                       inputMode="numeric"
                       onChange={(e) => handleOtpChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
-                      className="rounded-sm md:w-14 md:h-14 h-7 w-7 border flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6]  border-[#C6C6CD] p-2 text-[#76777D]"
+                      className="rounded-sm md:w-14 md:h-14 h-7 w-7 border flex justify-center items-center text-center  tracking-widest bg-[#F2F4F6]  border-[#C6C6CD] p-2"
                       type="text"
                     />
                   ))}
@@ -446,7 +446,7 @@ export default function Security() {
 
                             <input
                               placeholder="••••••••••••••••"
-                              className={` text-[#76777D] text-[#76777D] w-full border  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
+                              className={`   w-full border  text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
                               onChange={(e) =>
                                 setCurrentPassword(e.target.value)
                               }
@@ -472,7 +472,7 @@ export default function Security() {
                             </div>
                             <input
                               placeholder="••••••••••••••••"
-                              className={` text-[#76777D] w-full text-[#] border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2`}
+                              className={` w-full text-[#] border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2`}
                               onChange={(e) => setNewPassword(e.target.value)}
                               value={newPassword}
                               type={togglePassEyeNew ? "password" : "text"}
@@ -499,7 +499,7 @@ export default function Security() {
                               type={
                                 togglePasseyeConfirmnew ? "password" : "text"
                               }
-                              className={` text-[#76777D] pr-14 text-[#] w-full border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
+                              className={` pr-14 w-full border text-[#191C1E] rounded-sm bg-[#F2F4F6]  text-lg  p-2 `}
                               onChange={(e) => {
                                 setConfirmNewPasswrd(e.target.value);
                               }}

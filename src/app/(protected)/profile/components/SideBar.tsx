@@ -124,7 +124,7 @@ const SideBar = () => {
           </Link>
           <Link
             href={"/profile/accountdeletion"}
-            className={`${pathName === "/profile/accountdeletion" ? "bg-[00687A]  p-2 text-white rounded-lg" : "hover:bg-accent"} transition-all duration-300 p-2 w-[185px]  rounded-lg text-md flex gap-2 font-medium items-center text-[#45464D] text-center  ${poppins.className}`}
+            className={`${pathName === "/profile/accountdeletion" ? "bg-[#00687A]  p-2 text-white rounded-lg" : "hover:bg-accent"} transition-all duration-300 p-2 w-[185px]  rounded-lg text-md flex gap-2 font-medium items-center text-[#45464D] text-center  ${poppins.className}`}
           >
             <span>
               <OctagonAlert />
