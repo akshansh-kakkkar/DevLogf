@@ -5,7 +5,7 @@ import { Geist, Libertinus_Sans, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
 import { User } from "../../Types/index";
 import { useEffect, useState } from "react";
-import { Code, Globe, Mail, MapPin } from "lucide-react";
+import { BookText, Code, Globe, Mail, MapPin, Users } from "lucide-react";
 import BioModal from "./components/BioModel";
 import Link from "next/link";
 
@@ -96,18 +96,21 @@ export default function overView() {
             </div>
           </div>
         </div>
-        { (user?.github || user?.linkedinUrl || user?.websiteUrl || user?.instagramUrl) &&
-        (
-        <div className="flex flex-col gap-8">
-          <p
-            className={`${geist.className} font-semibold text-[#45464D] text-2xl`}
-          >
-            Social Links
-          </p>
-          <div className="md:flex grid grid-cols-2 md:flex-row   md:items-center gap-6">
+        {(user?.github ||
+          user?.linkedinUrl ||
+          user?.websiteUrl ||
+          user?.instagramUrl) && (
+          <div className="flex flex-col gap-8">
+            <p
+              className={`${geist.className} font-semibold text-[#45464D] text-2xl`}
+            >
+              Social Links
+            </p>
+            <div className="md:flex grid grid-cols-2 md:flex-row   md:items-center gap-6">
               {user?.github && (
                 <Link
-                target="_blank" rel="noopener noreferrer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
                   href={user?.github}
                 >
@@ -124,7 +127,8 @@ export default function overView() {
               )}
               {user?.linkedinUrl && (
                 <Link
-                target="_blank" rel="noopener noreferrer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`transition-all col-span-1 duration-300 w-24 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
                   href={user?.linkedinUrl}
                 >
@@ -143,7 +147,8 @@ export default function overView() {
                 <Link
                   className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
                   href={user?.instagramUrl}
-                  target="_blank" rel="noopener noreferrer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <span>
                     <Image
@@ -158,7 +163,8 @@ export default function overView() {
               )}
               {user?.websiteUrl && (
                 <Link
-                target="_blank" rel="noopener noreferrer"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
                   href={user?.websiteUrl}
                 >
@@ -168,17 +174,36 @@ export default function overView() {
                   <span>Website</span>
                 </Link>
               )}
+            </div>
           </div>
-        </div>
-        )
-}
-<div className="flex flex-col gap-8">
-            <p
+        )}
+        <div className="flex flex-col gap-8">
+          <p
             className={`${geist.className} font-semibold text-[#45464D] text-2xl`}
           >
-            Social Links
+            Statistics
           </p>
-</div>
+          <div className=" flex flex-col w-full md:grid md:grid-cols-2 gap-12  justify-center items-center">
+            <div className=" bg-whtie w-full border-1 flex gap-12 flex-col border-[#C6C6CD] p-6 rounded-xl">
+              <div className="flex justify-between items-center">
+                <p className={`${JetBrains.className} text-[#76777D]`}>POSTS PUBLISHED</p>
+                <div><BookText className="text-[#76777D]" /></div>
+              </div>
+              <div className={`${geist.className} text-[#00687A] text-7xl`}>
+                42
+              </div>
+            </div>
+            <div className="bg-whtie w-full border-1 flex gap-12 flex-col border-[#C6C6CD] p-6 rounded-xl">
+              <div className="flex justify-between items-center">
+                <p className={`${JetBrains.className} text-[#76777D]`}>FOLLOWERS</p>
+                <div><Users className="text-[#76777D]" /></div>
+              </div>
+              <div className={`${geist.className} text-[#00687A] text-7xl`}>
+                +22K
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
