@@ -1,12 +1,13 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
 import { prisma } from "@/lib/prisma";
-import { Geist, Libertinus_Sans, JetBrains_Mono } from 'next/font/google';
+import { Geist, Libertinus_Sans, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
 import { User } from "../../Types/index";
 import { useEffect, useState } from "react";
-import { Mail, MapPin } from "lucide-react";
+import { Code, Globe, Mail, MapPin } from "lucide-react";
 import BioModal from "./components/BioModel";
+import Link from "next/link";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -16,12 +17,12 @@ const libretnusSans = Libertinus_Sans({
   weight: ["400"],
 });
 const JetBrains = JetBrains_Mono({
-  subsets : ["latin"]
-})
+  subsets: ["latin"],
+});
 export default function overView() {
   const [user, setUser] = useState(null);
   const { data: session } = useSession();
-  const [showbioModal, setShowbioModal] = useState(false)
+  const [showbioModal, setShowbioModal] = useState(false);
   const userId = session?.user?.id;
   useEffect(() => {
     fetch(`/api/users/${userId}`)
@@ -31,7 +32,7 @@ export default function overView() {
 
   return (
     <div className=" bg-[#F7F9FB] ">
-      <div className="flex mx-22 flex-col gap-8">
+      <div className="flex md:mx-22 flex-col gap-8">
         <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
           <div
             className={`${geist.className} text-[#2D2D2D] text-4xl font-semibold`}
@@ -42,8 +43,8 @@ export default function overView() {
             Real-time engagement and profile metrics.
           </div>
         </div>
-        <div className="flex   gap-8">
-          <div className={`flex gap-8`}>
+        <div className="flex sm:justify-start sm:flex-row justify-center flex-col  gap-8">
+          <div className={`flex gap-8 justify-center sm:justify-start`}>
             <div className="w-[128px] relative   rounded-lg h-[128px]">
               {session?.user?.image ? (
                 <Image
@@ -67,28 +68,117 @@ export default function overView() {
               {session?.user?.name}
             </h1>
             <p
-            onClick={()=> setShowbioModal(true)}
-              className={`line-clamp-2 text-md cursor-pointer break-words w-180 ${libretnusSans.className} text-[#45464D]`}
+              onClick={() => setShowbioModal(true)}
+              className={`line-clamp-2 text-md cursor-pointer break-words md:w-[70%] ${libretnusSans.className} text-[#45464D]`}
             >
               {user?.bio || "Bio Not Available"}
             </p>
-            <BioModal open={showbioModal} bio={user?.bio} onClose={()=>setShowbioModal(false)} />
-            <div className={`${JetBrains.className} flex gap-8 text-[#76777D]`}>
-            <div className="flex gap-2">
-              <span>
-                <Mail />
-              </span>
-              <span>{session?.user.email}</span>
-            </div>
-            <div className="flex gap-2">
-              <span>
-                <MapPin />
-              </span>
-              <span>{user?.location || "N/A"} </span>
-            </div>
+            <BioModal
+              open={showbioModal}
+              bio={user?.bio}
+              onClose={() => setShowbioModal(false)}
+            />
+            <div
+              className={`${JetBrains.className} flex  flex-col sm:flex-row gap-2 sm:gap-8 text-[#76777D]`}
+            >
+              <div className="flex gap-2">
+                <span>
+                  <Mail />
+                </span>
+                <span>{session?.user.email}</span>
+              </div>
+              <div className="flex gap-2">
+                <span>
+                  <MapPin />
+                </span>
+                <span>{user?.location || "N/A"} </span>
+              </div>
             </div>
           </div>
         </div>
+        { (user?.github || user?.linkedinUrl || user?.websiteUrl || user?.instagramUrl) &&
+        (
+        <div className="flex flex-col gap-8">
+          <p
+            className={`${geist.className} font-semibold text-[#45464D] text-2xl`}
+          >
+            Social Links
+          </p>
+          <div className="md:flex grid grid-cols-2 md:flex-row   md:items-center gap-6">
+              {user?.github && (
+                <Link
+                target="_blank" rel="noopener noreferrer"
+                  className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
+                  href={user?.github}
+                >
+                  <span>
+                    <Image
+                      src={"/images/github.png"}
+                      alt="github"
+                      width={32}
+                      height={32}
+                    />
+                  </span>
+                  <span>GitHub</span>
+                </Link>
+              )}
+              {user?.linkedinUrl && (
+                <Link
+                target="_blank" rel="noopener noreferrer"
+                  className={`transition-all col-span-1 duration-300 w-24 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
+                  href={user?.linkedinUrl}
+                >
+                  <span>
+                    <Image
+                      src={"/images/linkedin.png"}
+                      alt="github"
+                      width={32}
+                      height={32}
+                    />
+                  </span>
+                  <span>Linkedin</span>
+                </Link>
+              )}
+              {user?.instagramUrl && (
+                <Link
+                  className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
+                  href={user?.instagramUrl}
+                  target="_blank" rel="noopener noreferrer"
+                >
+                  <span>
+                    <Image
+                      src={"/images/instagram.png"}
+                      alt="github"
+                      width={32}
+                      height={32}
+                    />
+                  </span>
+                  <span>Instagram</span>
+                </Link>
+              )}
+              {user?.websiteUrl && (
+                <Link
+                target="_blank" rel="noopener noreferrer"
+                  className={`transition-all col-span-1 w-30 duration-300 ${libretnusSans.className} flex gap-2 text-xl items-center bg-[#F2F4F6] w-fit py-1 px-2 rounded-lg border-2 border-[#C6C6CD] hover:border-[#00687A] font-bold `}
+                  href={user?.websiteUrl}
+                >
+                  <span>
+                    <Globe />
+                  </span>
+                  <span>Website</span>
+                </Link>
+              )}
+          </div>
+        </div>
+        )
+}
+<div className="flex flex-col gap-8">
+            <p
+            className={`${geist.className} font-semibold text-[#45464D] text-2xl`}
+          >
+            Social Links
+          </p>
+</div>
       </div>
     </div>
   );
