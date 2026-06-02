@@ -2,7 +2,6 @@ import { useSession } from "@/lib/auth-client";
 import { X } from "lucide-react";
 import { Geist, Libertinus_Sans } from "next/font/google";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 const geist = Geist({
   subsets: ["latin"],
 });

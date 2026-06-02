@@ -1,9 +1,8 @@
 "use client";
 import { authClient, useSession } from "@/lib/auth-client";
-import { email, Session } from "better-auth";
+import { Session } from "better-auth";
 import {
   Eye,
-  EyeClosed,
   EyeOff,
   Fingerprint,
   KeyRound,
@@ -38,7 +37,6 @@ export default function Security() {
   const [togglePassword, setTogglePassword] = useState(true);
   const [togglePasseyeConfirmnew, setTogglePasseyeConfirmnew] = useState(true);
   const [togglePassEyeNew, setTogglePassEyeNew] = useState(true);
-  const [currentEmail, setCurrentEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [isSendingOtp, setIsSendingOtp] = useState(false);

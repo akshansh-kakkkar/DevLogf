@@ -1,9 +1,7 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
-import { prisma } from "@/lib/prisma";
 import { Geist, Libertinus_Sans, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
-import { User } from "../../Types/index";
 import { useEffect, useState } from "react";
 import { BookText, Code, Globe, Mail, MapPin, Users } from "lucide-react";
 import BioModal from "./components/BioModel";

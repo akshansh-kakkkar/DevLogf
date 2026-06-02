@@ -13,8 +13,6 @@ import {
   UserRoundPen,
 } from "lucide-react";
 import {
-  Geist,
-  JetBrains_Mono,
   Libertinus_Sans,
   Poppins,
 } from "next/font/google";
@@ -26,16 +24,12 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["500", "800"],
 });
-const geist = Geist({
-  subsets: ["latin"],
-});
+
 const Libertinus = Libertinus_Sans({
   subsets: ["latin"],
   weight: ["700"],
 });
-const JetBrains = JetBrains_Mono({
-  subsets: ["latin"],
-});
+
 const SideBar = () => {
 
   const pathName = usePathname();
