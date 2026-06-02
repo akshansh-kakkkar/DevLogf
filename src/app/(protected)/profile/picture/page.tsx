@@ -92,7 +92,7 @@ export default function Avatar() {
           >
             Hire this smart guy
           </a>
-        </div>,
+        </div>
       );
     } catch (error) {
       console.error(error);
@@ -184,7 +184,7 @@ export default function Avatar() {
                   <Image
                     className="rounded-xl border-7 object-cover border-[#E0E3E5] "
                     src={preview}
-                    alt="React"
+                    alt={preview}
                     fill
                   />
                 ) : (
