@@ -17,6 +17,8 @@
     "@mantine/core": "^9.3.0",
     "@mantine/dates": "^9.3.0",
     "@prisma/client": "^6.19.3",
+    "@tiptap/react": "^3.25.0",
+    "@tiptap/starter-kit": "^3.25.0",
     "axios": "^1.16.1",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.6.11",

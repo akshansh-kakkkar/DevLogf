@@ -30,9 +30,12 @@ export async function GET(
         likes: true,
       },
     });
+
     if (!Post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+    const plainText = Post.content.replace(/[^>]*>/g, "");
+    const wordCount = plainText.trim().split(/\s+/).length
 
     const fullPost = {
       ...Post,
@@ -40,7 +43,7 @@ export async function GET(
         commentCount: Post.comments.length,
         likeCount: Post.likes.length,
         wordCount: Post.content.split(" ").length,
-        readingTime: Math.ceil(Post.content.split(" ").length / 200),
+        readingTime: Math.ceil( wordCount / 200),
       },
     };
     return NextResponse.json(fullPost);
@@ -69,8 +72,11 @@ export async function PUT(
 
     const body = await request.json();
     const validation = updatePostSchema.safeParse(body);
-    if(!validation.success){
-      return NextResponse.json({error : validation.error.flatten()}, {status : 400})
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error.flatten() },
+        { status: 400 },
+      );
     }
     const existingPost = await prisma.post.findUnique({
       where: {
@@ -100,7 +106,7 @@ export async function PUT(
       data: {
         title: validation.data.title,
         content: validation.data.content,
-        image: validation.data.image,
+        coverImage: validation.data.coverImage,
       },
       include: {
         author: true,
@@ -154,10 +160,12 @@ export async function DELETE(
         id: postId,
       },
     });
-    return NextResponse.json({
-      message: "Post deleted Successfully",
-      status: 204,
-    });
+    return NextResponse.json(
+      {
+        message: "Post deleted Successfully",
+      },
+      { status: 200 },
+    );
   } catch (error) {
     return NextResponse.json(
       { error: "Something went wrong while deleting the post." },

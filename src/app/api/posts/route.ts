@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
-import { createPostSchema } from "../validators/post";
+import { createPostSchema, visibility } from '../validators/post';
 
 export async function GET(request: Request) {
   try {
@@ -11,28 +11,42 @@ export async function GET(request: Request) {
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = parseInt(url.searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
-
+    const whereClause = {
+      isDraft : false,
+      visibility : "PUBLIC" as const,
+      OR : [
+        {
+          title : {
+            contains : search,
+            mode : "insensitive" as const,
+          },
+        },
+        {
+          content : {
+            contains : search,
+            mode : "insensitive" as const,
+          }
+        }
+      ]
+    }
+    
     const posts = await prisma.post.findMany({
-      where: {
-        OR: [
-          {
-            title: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-          {
-            content: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-        ],
-      },
+      where:  whereClause,
+
       include: {
-        author: true,
-        comments: true,
-        likes: true,
+        author : {
+          select : {
+            id : true, 
+            name : true,
+            image : true,
+          }
+        },
+        _count : {
+          select : {
+            likes : true,
+            comments : true
+          }
+        }
       },
 
       skip,
@@ -42,10 +56,12 @@ export async function GET(request: Request) {
         createdAt: "desc",
       },
     });
-    const totalPosts = await prisma.post.count();
+const totalPosts = await prisma.post.count({
+      where : whereClause
+    });
     return NextResponse.json({
       posts,
-      pagenation: {
+      pagination: {
         currentPage: page,
         totalPosts,
         totalPages: Math.ceil(totalPosts / limit),
@@ -77,8 +93,11 @@ export async function POST(request: Request) {
       data: {
         title: validation.data.title,
         content: validation.data.content,
-        image: validation.data.image,
+        coverImage: validation.data.coverImage,
         authorId: String(session.user.id),
+                visibility : validation.data.visibility ?? "PUBLIC",
+                isDraft : validation.data.isDraft ?? true
+
       },
       include: {
         author: true,

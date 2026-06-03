@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String
@@ -24,7 +30,7 @@ model User {
   updatedAt     DateTime      @updatedAt
   posts         Post[]
   likes         Like[]
-  isDeleted     Boolean @default(false)
+  isDeleted     Boolean       @default(false)
   deletedAt     DateTime?
   comments      Comment[]
   accounts      Account[]
@@ -36,20 +42,44 @@ model User {
   sessions      Session[]
   location      String?
   emailupdates  emailupdate[]
+  bookMarks BookMark[]
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  title     String
-  image     String
-  content   String
-  likes     Like[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  authorId  String
-  author    User      @relation(fields: [authorId], references: [id])
-  comments  Comment[]
+  id          Int       @id @default(autoincrement())
+  title       String
+  publishedAt DateTime?
+  ScheduledAt DateTime?
+  coverImage String?
+  content     String @db.Text
+  likes       Like[]
+  bookMarks BookMark[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+  postTags    PostTag[]
+  isDraft Boolean @default(true)
+  visibility Visibility @default(PUBLIC)
 }
+
+model PostTag {
+  PostId Int
+  TagId  Int
+  post   Post @relation(fields: [PostId], references: [id])
+  tag    Tag  @relation(fields: [TagId], references: [id])
+
+  @@id([PostId, TagId])
+}
+
+model Tag {
+  id    Int      @id @default(autoincrement())
+  name  String    @unique
+  posts PostTag[]
+}
+
+
 
 model Comment {
   id        Int      @id @default(autoincrement())
@@ -60,6 +90,15 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id])
   postId    Int
   post      Post     @relation(fields: [postId], references: [id])
+}
+
+model BookMark {
+  id Int @id @default(autoincrement())
+  userId String
+  postId Int
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+  @@unique([userId, postId])
 }
 
 model Like {

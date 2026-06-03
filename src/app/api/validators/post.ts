@@ -1,5 +1,10 @@
-import { title } from "process";
 import {z} from "zod";
+export const visibilitySchema = z.enum([
+    "PUBLIC",
+    "PRIVATE",
+    "UNLISTED"
+]).optional()
+
 export const createPostSchema = z.object({
     title : z
     .string()
@@ -8,9 +13,11 @@ export const createPostSchema = z.object({
     content : z
     .string()
     .min(10, "content too short"),
-    image : z
+    coverImage : z
     .string()
-    .url("Invalid image url")
+    .url("Invalid image url"),
+    isDraft : z.boolean().optional(),
+    visibility : visibilitySchema.optional()
 })
 
 export const updatePostSchema = z.object({
@@ -23,8 +30,9 @@ export const updatePostSchema = z.object({
     .string()
     .min(10, "content too short")
     .optional(),
-    image : z
+    coverImage : z
     .string()
     .url()
     .optional()
 })
+
