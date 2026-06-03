@@ -176,17 +176,17 @@ export default function page() {
             </button>
           </div>
         </div>
-                  <div className={`${JetBrains.className} border-t-2 pt-6 mx-8 text-xl text-[#76777D]`}>
+
+        <div className="flex flex-col mt-6 lg:hidden mx-8">
+                  <div className={`${JetBrains.className} border-t-2 pt-6 text-xl text-[#76777D]`}>
             Publish Workflow
           </div>
-        <div className="flex flex-col mt-6 lg:hidden mx-8">
-
           <div>
-          <div className={`${JetBrains.className} text-[#76777D] uppercase text-lg font-medium py-3`}>
+          <div className={`${JetBrains.className}  text-[#76777D] uppercase text-lg font-medium py-3`}>
             Visibility
           </div>
             <button
-                className={`${poppins.className} font-medium border cursor-pointer w-[200px] flex justify-around p-2 rounded-md`}
+                className={`${poppins.className} relative font-medium border cursor-pointer w-[200px] flex justify-around p-2 rounded-md`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpen(!open);
@@ -208,7 +208,7 @@ export default function page() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.98 }}
                     transition={{ duration: 0.15 }}
-                    className={`absolute left-8 overflow-hidden z-25 bg-white top-full cursor-pointer w-[200px]  rounded-lg border  shadow-lg ${poppins.className}`}
+                    className={`absolute left-8 overflow-hidden z-25 bg-white cursor-pointer w-[200px]  rounded-lg border  shadow-lg ${poppins.className}`}
                   >
                     {["Public (default)", "Private", "Unlisted"].map((item) => (
                       <button
