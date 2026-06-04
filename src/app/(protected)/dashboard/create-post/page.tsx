@@ -5,7 +5,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { DateTimePicker } from "@mantine/dates";
 import TipTapEditor from "../components/Editor/TitapEditor";
-import EditorToolBar from "../components/Toolbar/EditorToolbar";
+
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "800"],
@@ -58,7 +58,7 @@ export default function page() {
           <span>Tag</span>
         </div>
         <div className="lg:mx-12">
-          <TipTapEditor content={content} onChange={setContent} />
+          <TipTapEditor  content={content} onChange={setContent} />
         </div>
       </div>
       <div className="lg:col-span-2 relative ">
