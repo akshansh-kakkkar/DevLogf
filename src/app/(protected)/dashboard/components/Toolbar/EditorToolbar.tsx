@@ -11,11 +11,12 @@ import {
   ListOrdered,
 } from "lucide-react";
 import { Editor, useEditorState } from "@tiptap/react";
+import { useRef } from "react";
 interface Props {
   editor: Editor | null;
 }
 export default function EditorToolBar({ editor }: Props) {
-  if (!editor) return null;
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const editorState = useEditorState({
     editor,
     selector: ({ editor }) => ({
@@ -30,6 +31,23 @@ export default function EditorToolBar({ editor }: Props) {
     }),
   });
   if (!editor) return null;
+  const handleImageUpload  = async(e : React.ChangeEvent<HTMLInputElement>)=>{
+    
+    const file = e.target.files?.[0];
+    if(!file) return;
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/uploads", {
+      method : "POST",
+      body : formData
+    })
+    const data = await res.json();
+    editor?.chain().focus().setImage({
+      src : data.url
+    }).run()
+    e.target.value = ""
+  }
   return (
     <div className="flex bg-white px-2 shadow-lg rounded-lg items-start gap-4 py-2">
       <button
@@ -91,7 +109,12 @@ export default function EditorToolBar({ editor }: Props) {
       >
         <HighlighterIcon />
       </button>
+      <div>
+        <input
+        ref={fileInputRef} type="file" accept="image/*" className="hidden"  onChange={handleImageUpload}/>
+      </div>
       <button
+      onClick={()=> fileInputRef.current?.click()}
         className={`px-2 py-1 cursor-pointer rounded hover:bg-[#00687A]/40 `}
       >
         <Image />
@@ -101,6 +124,7 @@ export default function EditorToolBar({ editor }: Props) {
       >
         <Link />
       </button>
+
     </div>
   );
 }

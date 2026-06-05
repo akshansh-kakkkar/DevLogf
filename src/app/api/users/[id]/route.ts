@@ -30,7 +30,7 @@ export async function GET(
           select: {
             id: true,
             title: true,
-            image: true,
+            coverImage: true,
             createdAt: true,
 
             _count: {

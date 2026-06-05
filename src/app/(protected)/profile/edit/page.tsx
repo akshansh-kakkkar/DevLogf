@@ -38,6 +38,7 @@ export default function EditProfile() {
         toast.error("Profile Update Failed! Please try again after refresh");
         return;
       }
+      setInitialState(formData);
       toast.success(
         <div>
         <span> Profile Updated Successfully. </span> 
@@ -75,6 +76,10 @@ export default function EditProfile() {
     const fetchProfile = async () => {
       try {
         const response = await fetch(`/api/users/${userId}`);
+        if (!response.ok) {
+          toast.error("Failed to load profile.");
+          return;
+        }
         const data = await response.json();
 
         const profileData = {
@@ -97,27 +102,20 @@ export default function EditProfile() {
     fetchProfile();
   }, [userId]);
   const handleReset = () => {
-    try {
-      setLoading(true);
-      setFormData(initialState);
-      toast.error(
-        <div>
-         <span> Cancelled. </span>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-            href="https://www.linkedin.com/in/akshansh-kakkar-94b945381/"
-          >
-             Hire this Smart Guy
-          </a>
-        </div>,
-      );
-    } catch (error) {
-      toast.error("Data reset unsuccessfull please try again this is not my fault.");
-    } finally {
-      setLoading(false);
-    }
+    setFormData(initialState);
+    toast.info(
+      <div>
+       <span> Cancelled. </span>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+          href="https://www.linkedin.com/in/akshansh-kakkar-94b945381/"
+        >
+           Hire this Smart Guy
+        </a>
+      </div>,
+    );
   };
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialState);
   return (
@@ -194,7 +192,7 @@ export default function EditProfile() {
                 <span>
                   <Info size={16} />
                 </span>
-                Breif description about your expertise.
+                Brief description about your expertise.
               </div>
             </div>
             <div className="grid grid-cols-1 gap-6 xl:w-[72%]">
@@ -347,7 +345,7 @@ export default function EditProfile() {
                 <span>
                   <Save />
                 </span>
-                Sava Changes
+                Save Changes
               </motion.button>
             </div>
           </div>
