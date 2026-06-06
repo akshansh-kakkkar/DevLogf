@@ -12,11 +12,13 @@ import Link from "@tiptap/extension-link";
 interface Props {
   content: string;
   onChange: (value: string) => void;
+  images : string[];
+  setImages : React.Dispatch<React.SetStateAction<string[]>>;
 }
 const jetbrains = JetBrains_Mono({
   subsets: ['latin']
 })
-export default function TipTapEditor({ content, onChange }: Props) {
+export default function TipTapEditor({ content, onChange , images, setImages}: Props) {
   const editor = useEditor({
     extensions: [StarterKit,
       Image,
@@ -41,11 +43,12 @@ export default function TipTapEditor({ content, onChange }: Props) {
       onChange(editor.getHTML())
     }
   });
+  
   return (
     <>
           <BubbleMenu editor={editor} />
     <div className={`${jetbrains.className} flex flex-col gap-10`}>
-      <EditorToolBar editor={editor} />
+      <EditorToolBar images={images} setImages={setImages} editor={editor} />
       <EditorContent editor={editor} />
           </div>
 

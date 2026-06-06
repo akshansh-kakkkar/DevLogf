@@ -15,8 +15,10 @@ import { Editor, useEditorState } from "@tiptap/react";
 import { useRef, useState } from "react";
 interface Props {
   editor: Editor | null;
+  images : string[];
+  setImages : React.Dispatch<React.SetStateAction<string[]>> ; 
 }
-export default function EditorToolBar({ editor }: Props) {
+export default function EditorToolBar({ editor,images, setImages }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorState = useEditorState({
     editor,
@@ -51,13 +53,7 @@ export default function EditorToolBar({ editor }: Props) {
       body: formData,
     });
     const data = await res.json();
-    editor
-      ?.chain()
-      .focus()
-      .setImage({
-        src: data.url,
-      })
-      .run();
+    setImages((prev)=>[...prev, data.url])
     e.target.value = "";
   };
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -141,7 +137,7 @@ export default function EditorToolBar({ editor }: Props) {
       </div>
       <button
         type="button"
-        onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+        onClick={()=> fileInputRef.current?.click()}
         className={`px-2 py-1 cursor-pointer rounded hover:bg-[#00687A]/40 `}
       >
         <Image />

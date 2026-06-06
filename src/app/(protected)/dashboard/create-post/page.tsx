@@ -1,10 +1,19 @@
 "use client";
-import { BookCheck, BookDashed, ChevronDownIcon, Plus } from "lucide-react";
+import {
+  BookCheck,
+  BookDashed,
+  ChevronDownIcon,
+  Key,
+  Plus,
+  Pointer,
+  X,
+} from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { DateTimePicker } from "@mantine/dates";
 import TipTapEditor from "../components/Editor/TitapEditor";
+import GalleryModal from "../components/modal/GalleryModal";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,6 +35,9 @@ export default function page() {
   const [publishedType, setPublishedType] = useState<"now" | "scheduled">(
     "now",
   );
+  const [images, setImages] = useState<string[]>([]);
+  const [gallery, setGallery] = useState(false);
+
   return (
     <div
       onClick={() => {
@@ -58,7 +70,24 @@ export default function page() {
           <span>Tag</span>
         </div>
         <div className="lg:mx-12">
-          <TipTapEditor  content={content} onChange={setContent} />
+          <div className="flex group relative flex-row justify-center items-center transition-all duration-300 overflow-hidden my-2 mx4">
+            {images.length > 0 && (
+              <img
+                src={images[0]}
+                onClick={()=>setGallery(true)}
+                className="w-full h-48 object-cover rounded-lg"
+              />
+            )}
+            <div className="group-hover:block hidden absolute  text-white bg-black/80 rounded-full duration-400 transition-all cursor-pointer">
+              <Pointer />
+            </div>
+          </div>
+          <TipTapEditor
+            images={images}
+            setImages={setImages}
+            content={content}
+            onChange={setContent}
+          />
         </div>
       </div>
       <div className="lg:col-span-2 relative ">
@@ -277,6 +306,7 @@ export default function page() {
           </div>
         </div>
       </div>
+      <GalleryModal onClose={()=>setGallery(false)} images={images}  isOpen={gallery}/>
     </div>
   );
 }
