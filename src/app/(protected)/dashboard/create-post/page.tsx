@@ -3,10 +3,8 @@ import {
   BookCheck,
   BookDashed,
   ChevronDownIcon,
-  Key,
+  Loader2,
   Plus,
-  Pointer,
-  X,
 } from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
 import { useState } from "react";
@@ -37,7 +35,7 @@ export default function page() {
   );
   const [images, setImages] = useState<string[]>([]);
   const [gallery, setGallery] = useState(false);
-
+  const [coverLoading, setCoverLoading] = useState(true);
   return (
     <div
       onClick={() => {
@@ -70,24 +68,33 @@ export default function page() {
           <span>Tag</span>
         </div>
         <div className="lg:mx-12">
-          <div className="flex group relative flex-row justify-center items-center transition-all duration-300 overflow-hidden my-2 mx4">
+          {images.length > 0 && (
+            <>
+          {coverLoading && (
+            <div className="flex absolute inset-0 items-center justify-center bg-black/10 rounded-lg">
+              <Loader2 className="text-[#00687A] w-8 h-8 animate-spin" />
+            </div>
+          )}
+          
+          <div className="flex cursor-pointer relative flex-row justify-center items-center transition-all duration-300 overflow-hidden my-2 mx4">
             {images.length > 0 && (
               <img
                 src={images[0]}
-                onClick={()=>setGallery(true)}
-                className="w-full h-48 object-cover rounded-lg"
+                onLoad={()=> setCoverLoading(false)}
+                onClick={() => setGallery(true)}
+                className={`${coverLoading ? "opacity-0" : "opacity-100"} w-full h-48 object-cover rounded-lg`}
               />
             )}
-            <div className="group-hover:block hidden absolute  text-white bg-black/80 rounded-full duration-400 transition-all cursor-pointer">
-              <Pointer />
-            </div>
           </div>
+                    </>
+          )}
           <TipTapEditor
             images={images}
             setImages={setImages}
             content={content}
             onChange={setContent}
           />
+
         </div>
       </div>
       <div className="lg:col-span-2 relative ">
@@ -306,7 +313,11 @@ export default function page() {
           </div>
         </div>
       </div>
-      <GalleryModal onClose={()=>setGallery(false)} images={images}  isOpen={gallery}/>
+      <GalleryModal
+        onClose={() => setGallery(false)}
+        images={images}
+        isOpen={gallery}
+      />
     </div>
   );
 }

@@ -15,10 +15,10 @@ import { Editor, useEditorState } from "@tiptap/react";
 import { useRef, useState } from "react";
 interface Props {
   editor: Editor | null;
-  images : string[];
-  setImages : React.Dispatch<React.SetStateAction<string[]>> ; 
+  images: string[];
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
 }
-export default function EditorToolBar({ editor,images, setImages }: Props) {
+export default function EditorToolBar({ editor, images, setImages }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorState = useEditorState({
     editor,
@@ -45,7 +45,8 @@ export default function EditorToolBar({ editor,images, setImages }: Props) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    const previewUrl = URL.createObjectURL(file);
+    setImages((prev) => [...prev, previewUrl]);
     const formData = new FormData();
     formData.append("file", file);
     const res = await fetch("/api/uploads", {
@@ -53,7 +54,9 @@ export default function EditorToolBar({ editor,images, setImages }: Props) {
       body: formData,
     });
     const data = await res.json();
-    setImages((prev)=>[...prev, data.url])
+    setImages((prev) =>
+    prev.map((img)=> img === previewUrl ? data.url : img)
+    );
     e.target.value = "";
   };
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -94,35 +97,50 @@ export default function EditorToolBar({ editor,images, setImages }: Props) {
       <button
         type="button"
         className={`px-2 py-1 cursor-pointer rounded ${editorState.isItalic ? "bg-[#00687A]/80 text-white" : "hover:bg-[#00687A]/10"}`}
-        onClick={(e) => { e.preventDefault(); editor?.chain().focus().toggleItalic().run(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          editor?.chain().focus().toggleItalic().run();
+        }}
       >
         <Italic />
       </button>
       <button
         type="button"
         className={`px-2 py-1 cursor-pointer rounded ${editorState.isbullet ? "bg-[#00687A]/80 text-white" : "hover:bg-[#00697A]/10"}`}
-        onClick={(e) => { e.preventDefault(); editor?.chain().focus().toggleBulletList().run(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          editor?.chain().focus().toggleBulletList().run();
+        }}
       >
         <List />
       </button>
       <button
         type="button"
         className={`px-2 py-1 cursor-pointer rounded ${editorState.isOrdered ? "bg-[#00687A]/80 text-white" : "hover:bg-[#00687A]/10"}`}
-        onClick={(e) => { e.preventDefault(); editor?.chain().focus().toggleOrderedList().run(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          editor?.chain().focus().toggleOrderedList().run();
+        }}
       >
         <ListOrdered />
       </button>
       <button
         type="button"
         className={`px-2 py-1 cursor-pointer rounded ${editorState.isSnippet ? "bg-[#00687A]/80 text-white" : "hover:bg-[#00687A]/10"}`}
-        onClick={(e) => { e.preventDefault(); editor?.chain().focus().toggleCodeBlock().run(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          editor?.chain().focus().toggleCodeBlock().run();
+        }}
       >
         <Code />
       </button>
       <button
         type="button"
         className={`px-2 py-1 cursor-pointer rounded ${editorState.ishighLighted ? "bg-[#00687A]/80 text-white" : "hover:bg-[#00687A]/10"}`}
-        onClick={(e) => { e.preventDefault(); editor?.chain().focus().toggleHighlight().run(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          editor?.chain().focus().toggleHighlight().run();
+        }}
       >
         <HighlighterIcon />
       </button>
@@ -137,7 +155,7 @@ export default function EditorToolBar({ editor,images, setImages }: Props) {
       </div>
       <button
         type="button"
-        onClick={()=> fileInputRef.current?.click()}
+        onClick={() => fileInputRef.current?.click()}
         className={`px-2 py-1 cursor-pointer rounded hover:bg-[#00687A]/40 `}
       >
         <Image />
@@ -145,7 +163,10 @@ export default function EditorToolBar({ editor,images, setImages }: Props) {
       <div className="relative hidden">
         <button
           type="button"
-          onClick={(e) => { e.preventDefault(); setShowLinkInput((prev) => !prev); }}
+          onClick={(e) => {
+            e.preventDefault();
+            setShowLinkInput((prev) => !prev);
+          }}
           className={`px-2 py-1 cursor-pointer rounded hover:bg-[#00687A]/40`}
         >
           <Link />
