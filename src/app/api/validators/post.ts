@@ -17,7 +17,11 @@ export const createPostSchema = z.object({
     .string()
     .url("Invalid image url"),
     isDraft : z.boolean().optional(),
-    visibility : visibilitySchema.optional()
+    visibility : visibilitySchema.optional(),
+    tags : z
+    .array(z.string())
+    .max(5, "maximum 5 tags are allowed")
+    .default([]),
 })
 
 export const updatePostSchema = z.object({
@@ -33,6 +37,10 @@ export const updatePostSchema = z.object({
     coverImage : z
     .string()
     .url()
+    .optional(),
+    tags : z
+    .array(z.string())
+    .max(5)
     .optional()
 })
 

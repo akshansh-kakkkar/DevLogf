@@ -5,6 +5,7 @@ import {
   ChevronDownIcon,
   Loader2,
   Plus,
+  X,
 } from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
 import { useState } from "react";
@@ -35,7 +36,42 @@ export default function page() {
   );
   const [images, setImages] = useState<string[]>([]);
   const [gallery, setGallery] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [coverLoading, setCoverLoading] = useState(true);
+  const PostTags = async ()=>{
+    try{
+      const response = await fetch(`/api/posts`, {
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json",
+        },
+        body : JSON.stringify({
+          title,
+          content,
+          coverImage : images[0],
+          tags,
+          visibility :
+          visibility === "PRIVATE (default)" ? "PRIVATE (default)" : visibility === "UNLISTED" ? "UNLISTED" : "PUBLIC",
+          isDraft : false
+        })
+
+      })
+      const data = await response.json();
+      console.log(data)
+    }catch(error){
+      console.error(error)
+    }
+  }
+  const addTags = () => {
+    const trimmedInput = tagInput.trim();
+    if (!trimmedInput) return;
+    if(tags.length>=5)return;
+    if(tags.includes(trimmedInput.toLowerCase())) return;
+    setTags((prev)=>[...prev, trimmedInput.toLowerCase()]);
+    setTagInput("")
+  };
+
   return (
     <div
       onClick={() => {
@@ -59,34 +95,61 @@ export default function page() {
             className={`${LiberSans.className} resize-none outline-none overflow-hidden border-2 lg:p-0 p-4 bg-white lg:bg-transparent rounded-lg lg:rounded-none lg:border-none font-bold w-full`}
           />
         </div>
-        <div
-          className={`${poppins.className} font-medium cursor-pointer my-8 mx-8 flex gap-1 items-center text-center  w-fit p-1 px-2 rounded-sm hover:bg-[#e3fff5] text-[#00687A] `}
-        >
-          <span>
-            <Plus strokeWidth={2} />
-          </span>
-          <span>Tag</span>
+        <div className="flex my-8 mx-8 gap-3 items-center ">
+          <div className="flex gap-3">
+            <input
+            className="w-full border-1 border-[#00687A] px-2 rounded-sm outline-none placeholder:text-[#00687ab6] py-1 flex"
+              type="text"
+              onChange={(e) => {
+                setTagInput(e.target.value);
+              }}
+              placeholder="search..."
+              value={tagInput}
+              onKeyDown={(e)=>{
+                if(e.key === "Enter"){
+                  addTags()
+                }
+              }}
+            />
+          </div>
+          <button
+          type='button'
+          onClick={PostTags}
+            className={`${poppins.className} cursor-pointer duration-300 border-[#00687A] border-1 hover:border-none font-medium cursor-pointer flex gap-1 items-center text-center  w-fit p-1 px-2 hover:text-[#ffffff] rounded-sm hover:bg-[#00687A] text-[#00687A] `}
+          >
+            <span>
+              <Plus strokeWidth={2} />
+            </span>
+            <span>Tag</span>
+          </button>
+        </div>
+        <div className="flex flex-row mx-8 my-8 gap-2 overflow-x-auto ">
+          {tags.map((tag)=>(
+            <button className="flex text-white bg-[#00687A] px-2 py-1 rounded-lg items-center gap-2">
+              #{tag} <span className="cursor-pointer"><X key={tag} onClick={()=>setTags((prev)=> prev.filter((t)=> t !== tag))} size={24}/></span>
+            </button>
+          ))}
         </div>
         <div className="lg:mx-12">
           {images.length > 0 && (
             <>
-          {coverLoading && (
-            <div className="flex absolute inset-0 items-center justify-center bg-black/10 rounded-lg">
-              <Loader2 className="text-[#00687A] w-8 h-8 animate-spin" />
-            </div>
-          )}
-          
-          <div className="flex cursor-pointer relative flex-row justify-center items-center transition-all duration-300 overflow-hidden my-2 mx4">
-            {images.length > 0 && (
-              <img
-                src={images[0]}
-                onLoad={()=> setCoverLoading(false)}
-                onClick={() => setGallery(true)}
-                className={`${coverLoading ? "opacity-0" : "opacity-100"} w-full h-48 object-cover rounded-lg`}
-              />
-            )}
-          </div>
-                    </>
+              {coverLoading && (
+                <div className="flex absolute inset-0 items-center justify-center bg-black/10 rounded-lg">
+                  <Loader2 className="text-[#00687A] w-8 h-8 animate-spin" />
+                </div>
+              )}
+
+              <div className="flex cursor-pointer relative flex-row justify-center items-center transition-all duration-300 overflow-hidden my-2 mx4">
+                {images.length > 0 && (
+                  <img
+                    src={images[0]}
+                    onLoad={() => setCoverLoading(false)}
+                    onClick={() => setGallery(true)}
+                    className={`${coverLoading ? "opacity-0" : "opacity-100"} w-full h-48 object-cover rounded-lg`}
+                  />
+                )}
+              </div>
+            </>
           )}
           <TipTapEditor
             images={images}
@@ -94,7 +157,6 @@ export default function page() {
             content={content}
             onChange={setContent}
           />
-
         </div>
       </div>
       <div className="lg:col-span-2 relative ">
