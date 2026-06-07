@@ -39,30 +39,33 @@ export default function page() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [coverLoading, setCoverLoading] = useState(true);
-  const PostTags = async ()=>{
-    try{
+  const submitPost = async (isDraft: boolean) => {
+    try {
       const response = await fetch(`/api/posts`, {
-        method : "POST",
-        headers : {
-          "Content-Type" : "application/json",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body : JSON.stringify({
+        body: JSON.stringify({
           title,
           content,
-          coverImage : images[0],
+          coverImage: images[0],
           tags,
-          visibility :
-          visibility === "PRIVATE (default)" ? "PRIVATE (default)" : visibility === "UNLISTED" ? "UNLISTED" : "PUBLIC",
-          isDraft : false
-        })
-
-      })
+          visibility:
+            visibility === "Private"
+              ? "PRIVATE"
+              : visibility === "Unlisted"
+                ? "UNLISTED"
+                : "PUBLIC",
+          isDraft,
+        }),
+      });
       const data = await response.json();
-      console.log(data)
-    }catch(error){
-      console.error(error)
+      console.log(data);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
   const addTags = () => {
     const trimmedInput = tagInput.trim();
     if (!trimmedInput) return;
@@ -114,7 +117,7 @@ export default function page() {
           </div>
           <button
           type='button'
-          onClick={PostTags}
+          onClick={addTags}
             className={`${poppins.className} cursor-pointer duration-300 border-[#00687A] border-1 hover:border-none font-medium cursor-pointer flex gap-1 items-center text-center  w-fit p-1 px-2 hover:text-[#ffffff] rounded-sm hover:bg-[#00687A] text-[#00687A] `}
           >
             <span>
@@ -253,6 +256,7 @@ export default function page() {
           </div>
           <div className="flex gap-4 py-8 flex-col justify-center items-center text-center w-[360px]">
             <button
+              onClick={() => submitPost(true)}
               className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer`}
             >
               Save Draft
@@ -261,6 +265,7 @@ export default function page() {
               </span>
             </button>
             <button
+              onClick={() => submitPost(false)}
               className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer`}
             >
               Publish Now{" "}
@@ -356,6 +361,7 @@ export default function page() {
             </div>
             <div className="flex gap-4 py-8 flex-col justify-center items-center text-center">
               <button
+                onClick={() => submitPost(true)}
                 className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer`}
               >
                 Save Draft
@@ -364,6 +370,7 @@ export default function page() {
                 </span>
               </button>
               <button
+                onClick={() => submitPost(false)}
                 className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer`}
               >
                 Publish Now{" "}

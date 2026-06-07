@@ -22,12 +22,21 @@ export default async function PostPage(){
                {data.posts?.length === 0 ? (
                 <div className={`text-4xl font-semibold`}>No posts found</div>
                ) : (
-                data.post?.map((post:any)=>(
+                data.posts?.map((post:any)=>(
                      <Link key={post.id} href={`/posts/${post.id}`}>
                     <div  className='bg-gray-300 w-[400px] rounded-md p-4 h-[400px] gap-12  '>
                         <Image width={400} height={200} src={post.image} alt={post.title} />
                         <div>{post.title}</div>
                         <div>{post.author?.name}</div>
+                        {post.postTags?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {post.postTags.map((pt: any) => (
+                              <span key={pt.tag.id} className="bg-[#00687A] text-white px-2 py-0.5 rounded-lg text-xs">
+                                #{pt.tag.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                     </div>
                     </Link>
                 ))

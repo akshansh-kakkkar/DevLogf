@@ -21,13 +21,17 @@ export async function GET(
       },
       include: {
         author: true,
-
         comments: {
           include: {
             author: true,
           },
         },
         likes: true,
+        postTags: {
+          include: {
+            tag: true,
+          },
+        },
       },
     });
 

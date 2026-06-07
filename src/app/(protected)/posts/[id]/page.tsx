@@ -24,9 +24,18 @@ export default async function SinglePost({params}:{params: Promise<{id : string}
             </div>
             <h1>{post.title}</h1>
 
-            <div>
+        <div>
                 <div>{post.author?.name}</div>
                 <div>{post.content}</div>
+                {post.postTags?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {post.postTags.map((pt: { tag: { id: number; name: string } }) => (
+                      <span key={pt.tag.id} className="bg-[#00687A] text-white px-2 py-1 rounded-lg text-sm">
+                        #{pt.tag.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div>{post.comment.map((comments : any)=>(
                     <div key={comments.id}>
                         {comments.content}
