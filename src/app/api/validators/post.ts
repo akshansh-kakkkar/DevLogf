@@ -15,7 +15,8 @@ export const createPostSchema = z.object({
     .min(10, "content too short"),
     coverImage : z
     .string()
-    .url("Invalid image url"),
+    .url("Invalid image url")
+    .optional(),
     isDraft : z.boolean().optional(),
     visibility : visibilitySchema.optional(),
     tags : z

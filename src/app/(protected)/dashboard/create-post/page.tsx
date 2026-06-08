@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { DateTimePicker } from "@mantine/dates";
 import TipTapEditor from "../components/Editor/TitapEditor";
@@ -26,6 +27,7 @@ const LiberSans = Libertinus_Sans({
   weight: ["400", "700"],
 });
 export default function page() {
+  const router = useRouter();
   const [visibility, setVisibility] = useState("Public (default)");
   const [open, setOpen] = useState(false);
   const [scheduleAt, setScheduleAt] = useState("");
@@ -39,6 +41,8 @@ export default function page() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [coverLoading, setCoverLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<
     { id: number; name: string }[]
   >([]);
@@ -61,7 +65,17 @@ export default function page() {
     return () => clearTimeout(timeOut);
   }, [tagInput]);
   const submitPost = async (isDraft: boolean) => {
+    setSubmitError(null);
+    if (!title.trim()) {
+      setSubmitError("Title is required.");
+      return;
+    }
+    if (content.length < 10) {
+      setSubmitError("Content is too short (min 10 characters).");
+      return;
+    }
     try {
+      setSubmitting(true);
       const response = await fetch(`/api/posts`, {
         method: "POST",
         headers: {
@@ -70,7 +84,7 @@ export default function page() {
         body: JSON.stringify({
           title,
           content,
-          coverImage: images[0],
+          coverImage: images[0] || undefined,
           tags,
           visibility:
             visibility === "Private"
@@ -82,9 +96,21 @@ export default function page() {
         }),
       });
       const data = await response.json();
-      console.log(data);
+      if (!response.ok) {
+        const message =
+          data?.error?.formErrors?.[0] ||
+          data?.error?.fieldErrors
+            ? Object.values(data.error.fieldErrors ?? {}).flat().join(", ")
+            : data?.error || "Something went wrong.";
+        setSubmitError(typeof message === "string" ? message : "Submission failed.");
+        return;
+      }
+      router.push("/dashboard/posts");
     } catch (error) {
       console.error(error);
+      setSubmitError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
   const addTags = () => {
@@ -313,23 +339,22 @@ export default function page() {
             </div>
           </div>
           <div className="flex gap-4 py-8 flex-col justify-center items-center text-center w-[360px]">
+            {submitError && (
+              <p className={`text-red-500 text-sm text-center ${poppins.className}`}>{submitError}</p>
+            )}
             <button
               onClick={() => submitPost(true)}
-              className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer`}
+              disabled={submitting}
+              className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Save Draft
-              <span>
-                <BookDashed />
-              </span>
+              {submitting ? <Loader2 className="animate-spin w-5 h-5" /> : <>Save Draft <span><BookDashed /></span></>}
             </button>
             <button
               onClick={() => submitPost(false)}
-              className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer`}
+              disabled={submitting}
+              className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-[300px] h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Publish Now{" "}
-              <span>
-                <BookCheck />
-              </span>{" "}
+              {submitting ? <Loader2 className="animate-spin w-5 h-5" /> : <>Publish Now <span><BookCheck /></span></>}
             </button>
           </div>
         </div>
@@ -418,23 +443,22 @@ export default function page() {
               )}
             </div>
             <div className="flex gap-4 py-8 flex-col justify-center items-center text-center">
+              {submitError && (
+                <p className={`text-red-500 text-sm text-center ${poppins.className}`}>{submitError}</p>
+              )}
               <button
                 onClick={() => submitPost(true)}
-                className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer`}
+                disabled={submitting}
+                className={`text-xl gap-2 border-2 py-6 border-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium hover:text-white hover:bg-[#191C1E] transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                Save Draft
-                <span>
-                  <BookDashed />
-                </span>
+                {submitting ? <Loader2 className="animate-spin w-5 h-5" /> : <>Save Draft <span><BookDashed /></span></>}
               </button>
               <button
                 onClick={() => submitPost(false)}
-                className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer`}
+                disabled={submitting}
+                className={`text-xl gap-2 border-2  text-white py-7 bg-[#191C1E] w-full h-[40px] flex justify-center text-center items-center rounded-lg ${JetBrains.className} font-medium  hover:bg-[#5d5d5d]  transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                Publish Now{" "}
-                <span>
-                  <BookCheck />
-                </span>{" "}
+                {submitting ? <Loader2 className="animate-spin w-5 h-5" /> : <>Publish Now <span><BookCheck /></span></>}
               </button>
             </div>
           </div>
