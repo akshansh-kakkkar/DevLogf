@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { DateTimePicker } from "@mantine/dates";
 import TipTapEditor from "../components/Editor/TitapEditor";
@@ -39,6 +39,27 @@ export default function page() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [coverLoading, setCoverLoading] = useState(true);
+  const [suggestions, setSuggestions] = useState<
+    { id: number; name: string }[]
+  >([]);
+  useEffect(() => {
+    const timeOut = setTimeout(async () => {
+      if (!tagInput.trim()) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const response = await fetch(
+          `/api/tags?search=${encodeURIComponent(tagInput)}`,
+        );
+        const data = await response.json();
+        setSuggestions(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300);
+    return () => clearTimeout(timeOut);
+  }, [tagInput]);
   const submitPost = async (isDraft: boolean) => {
     try {
       const response = await fetch(`/api/posts`, {
@@ -69,10 +90,10 @@ export default function page() {
   const addTags = () => {
     const trimmedInput = tagInput.trim();
     if (!trimmedInput) return;
-    if(tags.length>=5)return;
-    if(tags.includes(trimmedInput.toLowerCase())) return;
-    setTags((prev)=>[...prev, trimmedInput.toLowerCase()]);
-    setTagInput("")
+    if (tags.length >= 5) return;
+    if (tags.includes(trimmedInput.toLowerCase())) return;
+    setTags((prev) => [...prev, trimmedInput.toLowerCase()]);
+    setTagInput("");
   };
 
   return (
@@ -99,25 +120,53 @@ export default function page() {
           />
         </div>
         <div className="flex my-8 mx-8 gap-3 items-center ">
-          <div className="flex gap-3">
+          <div className="relative">
             <input
-            className="w-full border-1 border-[#00687A] px-2 rounded-sm outline-none placeholder:text-[#00687ab6] py-1 flex"
+              className="w-full border-1 border-[#00687A] px-2 rounded-sm outline-none placeholder:text-[#00687ab6] py-1 flex"
               type="text"
               onChange={(e) => {
                 setTagInput(e.target.value);
               }}
               placeholder="search..."
               value={tagInput}
-              onKeyDown={(e)=>{
-                if(e.key === "Enter"){
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  addTags();
+                }
+                if (suggestions.length > 0) {
+                  const firstTag = suggestions[0];
+                  if (!tags.includes(firstTag.name)) {
+                    setTagInput("")
+                    setSuggestions([])
+                  }
                   addTags()
                 }
               }}
             />
+            {suggestions.length > 0 && (
+              <div className="absolute top-full left-0  w-full bg-white border rounded-md shadow-md z-50">
+                {suggestions.map((tag) => (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100"
+                    onClick={() => {
+                      if (!tags.includes(tag.name)) {
+                        setTags((prev) => [...prev, tag.name]);
+                      }
+                      setTagInput("");
+                      setSuggestions([]);
+                    }}
+                  >
+                    #{tag.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <button
-          type='button'
-          onClick={addTags}
+            type="button"
+            onClick={addTags}
             className={`${poppins.className} cursor-pointer duration-300 border-[#00687A] border-1 hover:border-none font-medium cursor-pointer flex gap-1 items-center text-center  w-fit p-1 px-2 hover:text-[#ffffff] rounded-sm hover:bg-[#00687A] text-[#00687A] `}
           >
             <span>
@@ -127,9 +176,18 @@ export default function page() {
           </button>
         </div>
         <div className="flex flex-row mx-8 my-8 gap-2 overflow-x-auto ">
-          {tags.map((tag)=>(
+          {tags.map((tag) => (
             <button className="flex text-white bg-[#00687A] px-2 py-1 rounded-lg items-center gap-2">
-              #{tag} <span className="cursor-pointer"><X key={tag} onClick={()=>setTags((prev)=> prev.filter((t)=> t !== tag))} size={24}/></span>
+              #{tag}{" "}
+              <span className="cursor-pointer">
+                <X
+                  key={tag}
+                  onClick={() =>
+                    setTags((prev) => prev.filter((t) => t !== tag))
+                  }
+                  size={24}
+                />
+              </span>
             </button>
           ))}
         </div>
