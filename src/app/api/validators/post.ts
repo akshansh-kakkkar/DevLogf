@@ -23,6 +23,10 @@ export const createPostSchema = z.object({
     .array(z.string())
     .max(5, "maximum 5 tags are allowed")
     .default([]),
+    scheduledAt : z
+    .string()
+    .datetime()
+    .optional(),
 })
 
 export const updatePostSchema = z.object({

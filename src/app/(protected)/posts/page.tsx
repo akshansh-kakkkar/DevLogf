@@ -25,7 +25,9 @@ export default async function PostPage(){
                 data.posts?.map((post:any)=>(
                      <Link key={post.id} href={`/posts/${post.id}`}>
                     <div  className='bg-gray-300 w-[400px] rounded-md p-4 h-[400px] gap-12  '>
-                        <Image width={400} height={200} src={post.image} alt={post.title} />
+                        {post.coverImage && (
+                          <Image width={400} height={200} sizes="400px" loading="eager" className="rounded-md object-cover" src={post.coverImage} alt={post.title} />
+                        )}
                         <div>{post.title}</div>
                         <div>{post.author?.name}</div>
                         {post.postTags?.length > 0 && (

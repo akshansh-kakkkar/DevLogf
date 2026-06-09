@@ -5,7 +5,6 @@ import { createPostSchema } from "../validators/post";
 
 export async function GET(request: Request) {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     const url = new URL(request.url);
     const search = url.searchParams.get("search") || "";
     const page = parseInt(url.searchParams.get("page") || "1");
@@ -95,6 +94,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const tags = validation.data.tags || [];
+    const isScheduled = !!validation.data.scheduledAt;
     const newPost = await prisma.post.create({
       data: {
         title: validation.data.title,
@@ -102,7 +102,10 @@ export async function POST(request: Request) {
         coverImage: validation.data.coverImage,
         authorId: String(session.user.id),
         visibility: validation.data.visibility ?? "PUBLIC",
-        isDraft: validation.data.isDraft ?? true,
+        // scheduled posts stay as drafts until the cron job publishes them
+        isDraft: isScheduled ? true : (validation.data.isDraft ?? true),
+        ScheduledAt: validation.data.scheduledAt ? new Date(validation.data.scheduledAt) : null,
+        publishedAt: !isScheduled && !validation.data.isDraft ? new Date() : null,
         postTags: {
           create: await Promise.all(
             tags.map(async (tagname) => {

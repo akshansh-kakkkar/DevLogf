@@ -378,8 +378,13 @@ export default function page() {
                 <Loader2 className="animate-spin w-5 h-5" />
               ) : (
                 <>
-                  Publish Now{" "}
-                  <span>
+                {publishedType === "scheduled" ? (
+                  <div>Schedule Now</div>
+                ) : (
+                  <div>
+                    Pulblish Now
+                  </div>
+                )}                  <span>
                     <BookCheck />
                   </span>
                 </>
