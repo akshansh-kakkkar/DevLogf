@@ -5,8 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
-import Image from "next/image";
-import content from '@/components/tiptap-templates/simple/data/content.json';
+import { AnimatePresence, motion } from "framer-motion";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -46,23 +45,22 @@ export default function () {
     }
   }, [id]);
   const getImage = (html: string) => {
-    const doc = new DOMParser().parseFromString(html, "text/html")
-    return Array.from(doc.querySelectorAll("img")).map((img) => img.src).filter(Boolean)
-  }
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return Array.from(doc.querySelectorAll("img"))
+      .map((img) => img.src)
+      .filter(Boolean);
+  };
   let images: string[] = [];
   if (post?.coverImage) {
-    images = Array.isArray(post.coverImage) ? post.coverImage : [post.coverImage];
+    images = Array.isArray(post.coverImage)
+      ? post.coverImage
+      : [post.coverImage];
   } else if (post) {
     images = getImage(post.content);
   }
   const [currentImage, setCurrentImage] = useState(0);
 
-  useEffect(() => {
-    console.log("CAROUSEL DEBUG - images:", images);
-    console.log("CAROUSEL DEBUG - currentImage:", currentImage);
-    console.log("CAROUSEL DEBUG - current image URL:", images[currentImage]);
-  }, [images, currentImage]);
-
+  const [direction, setDirection] = useState(1);
   return (
     <>
       {loading || !post ? (
@@ -70,7 +68,7 @@ export default function () {
           <Loader2 size={48} className="text-[#00687A] animate-spin " />
         </div>
       ) : (
-        <div className="mt-12  mx-5 md:mx-12 lg:mx-42 flex gap-7 flex-col">
+        <div className="mt-12  mx-5 md:mx-12 lg:mx-22 flex gap-7 flex-col">
           <div className="flex items-center gap-2">
             <div
               className={`${jetbrains.className}  text-[#45464D] bg-[#E6E8EA] p-1 rounded-sm text-xs font-bold `}
@@ -88,26 +86,71 @@ export default function () {
               })}
             </div>
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center">
             {images.length > 0 && (
-              <div className="flex items-center overflow-x-hidden gap-4">
-                <div className="cursor-pointer" onClick={() => { console.log("LEFT"); setCurrentImage((prev) => prev === 0 ? images.length - 1 : prev - 1) }}>
-                  <ChevronLeft />
+              <div className="flex items-center gap-2 sm:gap-12 overflow-x-hidden">
+                <div
+                  className="cursor-pointer  z-35  rounded-full  bg-[#00687A] p-1 text-white"
+                  onClick={() => {
+                    setDirection(-1)
+                    setCurrentImage((prev) =>
+                      prev === 0 ? images.length - 1 : prev - 1,
+                    );
+                  }}
+                >
+                  <ChevronLeft size={32} />
                 </div>
-                <div className="relative w-[60vw] max-w-[600px] h-[300px] rounded-lg">
-                  <img
-                    className="w-full h-full object-contain select-none rounded-lg"
-                    src={images[currentImage]}
-                    alt={post.title || "Post image"}
-                  />
+                <div className=" w-full sm:w-[800px] h-[200px] sm:h-[300px] object-cover rounded-lg">
+                  <AnimatePresence mode="wait" custom={direction}>
+                    <motion.img
+                      key={images[currentImage]}
+                      className="w-full  h-full border-4 border-[#00687A] object-center select-none rounded-lg"
+                      src={images[currentImage]}
+                      custom={direction}
+                      alt={post.title || "Post image"}
+                      transition={{duration:0.2}}
+                      variants={{
+                        enter : (dir : number)=>({
+                          x : dir > 0 ? 300 : -300,
+                          opacity : 0
+                        }),
+                        center : {
+                          x : 0,
+                          opacity :1
+                        },
+                        exit : (dir : number)=> ({
+                          x : dir > 0 ? -300 : 300,
+                          opacity:0
+                        })
+                      }}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                    />
+                  </AnimatePresence>
                 </div>
-                <div className="cursor-pointer" onClick={() => { console.log("RIGHT"); setCurrentImage((prev) => prev === images.length - 1 ? 0 : prev + 1) }}>
-                  <ChevronRight />
+                <div
+                  className="cursor-pointer rounded-full  bg-[#00687A] p-1 text-white"
+                  onClick={() => {
+                    setDirection(1)  
+                    setCurrentImage((prev) =>
+                      prev === images.length - 1 ? 0 : prev + 1,
+                    );
+                  }}
+                >
+                  <ChevronRight size={32} />
                 </div>
               </div>
             )}
-          </div>
 
+          </div>
+            <div className="flex justify-center items-center gap-4">
+              {images.map((_, index)=>(
+                <button key={index} className={`w-2 h-2 rounded-full transition-all ${currentImage === index ? "bg-[#00687A]" : "bg-gray-300"}`}>
+
+                </button>
+              ))}
+            </div>
           <div
             className={`text-6xl px-5 font-bold ${libretinusSans.className} select-none border-b-2 py-2`}
           >

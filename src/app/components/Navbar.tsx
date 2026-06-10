@@ -1,5 +1,14 @@
 "use client";
-import { ChevronDown, CircleUser, EllipsisVertical, LayoutDashboard, LogOut, X } from "lucide-react";
+import {
+  ChevronDown,
+  CircleUser,
+  Dot,
+  Ellipsis,
+  EllipsisVertical,
+  LayoutDashboard,
+  LogOut,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
@@ -28,7 +37,7 @@ export default function Navbar() {
   const toggleOpen = () => {
     setIsOpen((prev) => !prev);
   };
-  const router = useRouter()
+  const router = useRouter();
   return (
     <>
       <div className="fixed left-0 z-50 w-full h-20 bg-white flex top-0 justify-between text-center content-center items-center border-b border-[#C6C6CD] p-5">
@@ -77,27 +86,41 @@ export default function Navbar() {
         </div>
         <div className="flex gap-5 items-center flex-row">
           <div className="flex items-center gap-4">
+            {isPending && (
+              <div className="flex">
+                {[0, 1, 2].map((i) => (
+                  <motion.span key={i} className="text-[#00687A]" animate={{y : [0,-8,0]}} transition={{duration: 0.6, repeat:Infinity, delay : i * 0.15}} >
+                    <Dot size={48} />
+                  </motion.span>
+                ))}
+              </div>
+            )}
             {session ? (
               <DropdownMenu>
-                <DropdownMenuTrigger >
+                <DropdownMenuTrigger>
                   <div className=" cursor-pointer  rounded-full gap-auto flex-row px-3  bg-white shadow-lg border py-2 gap-7  font-semibold flex items-center justify-between">
                     {session?.user?.image ? (
                       <div className="rounded-full relative h-10 w-10 items-center border-2 border-[#00687A] justify-center">
-                        <Image src={session?.user?.image} fill  className="rounded-full object-cover" alt={session?.user?.name}/>
+                        <Image
+                          src={session?.user?.image}
+                          fill
+                          className="rounded-full object-cover"
+                          alt={session?.user?.name}
+                        />
                       </div>
                     ) : (
-
-                    
-                  <span className="bg-[#00687A] rounded-full  h-10 w-10 text-center text-white flex items-center justify-center text-white">{session.user.name?.charAt(0).toUpperCase()}</span>
-                  )}
-                  <span className="-translate-x-2 cursor-pointer border-1 rounded-full" >
-                    <ChevronDown size={24}/>
-                  </span>
+                      <span className="bg-[#00687A] rounded-full  h-10 w-10 text-center text-white flex items-center justify-center text-white">
+                        {session.user.name?.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="-translate-x-2 cursor-pointer border-1 rounded-full">
+                      <ChevronDown size={24} />
+                    </span>
                   </div>
                 </DropdownMenuTrigger>
-                
+
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem >
+                  <DropdownMenuItem>
                     <Link
                       href={"/dashboard"}
                       className="flex justify-between items-center gap-5"
@@ -105,10 +128,12 @@ export default function Navbar() {
                       <span>
                         <LayoutDashboard />
                       </span>{" "}
-                      <span className={`${JetBrainsMono.className}`}>Dashboard</span>
+                      <span className={`${JetBrainsMono.className}`}>
+                        Dashboard
+                      </span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem >
+                  <DropdownMenuItem>
                     <Link
                       href={"/profile"}
                       className="flex justify-center items-center gap-5"
@@ -116,65 +141,66 @@ export default function Navbar() {
                       <span>
                         <CircleUser />
                       </span>
-                      <span className={`${JetBrainsMono.className}`}>Profile</span>
+                      <span className={`${JetBrainsMono.className}`}>
+                        Profile
+                      </span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={async () => {
                       await signOut();
-                      router.push('/auth')
+                      router.push("/auth");
                     }}
                   >
                     <div className="flex justify-center items-center gap-5">
                       <span>
                         <LogOut className="text-red-500" />
                       </span>
-                      <span className={`text-red-500 ${JetBrainsMono.className}`}>Logout</span>
+                      <span
+                        className={`text-red-500 ${JetBrainsMono.className}`}
+                      >
+                        Logout
+                      </span>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
-              {!session && !isPending && (
-                <div className="flex gap-4 items-center">
-                <motion.div
-                  className="md:block hidden"
-                  whileTap={{ scale: 1.05 }}
-                  whileHover={{ scale: 0.9 }}
-                >
-                  <Link
-                    href={"/auth?mode=signup"}
-                    className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm"
-                  >
-                    SignUp
-                  </Link>
-                </motion.div>
-                <motion.div
-                  className="md:block hidden"
-                  whileTap={{ scale: 1.05 }}
-                  whileHover={{ scale: 0.9 }}
-                >
-                  <Link
-                    href={"/auth?mode=login"}
-                    className="outline-[#191C1E]  outline-2 -outline-offset-2  text-[#191C1E] px-4 py-2 rounded-sm"
-                  >
-                    Login
-                  </Link>
-                </motion.div>
-                 </div>
+                {!session && !isPending && (
+                  <div className="flex gap-4 items-center">
+                    <motion.div
+                      className="md:block hidden"
+                      whileTap={{ scale: 1.05 }}
+                      whileHover={{ scale: 0.9 }}
+                    >
+                      <Link
+                        href={"/auth?mode=signup"}
+                        className="bg-[#191C1E]  text-white px-4 py-2 rounded-sm"
+                      >
+                        SignUp
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      className="md:block hidden"
+                      whileTap={{ scale: 1.05 }}
+                      whileHover={{ scale: 0.9 }}
+                    >
+                      <Link
+                        href={"/auth?mode=login"}
+                        className="outline-[#191C1E]  outline-2 -outline-offset-2  text-[#191C1E] px-4 py-2 rounded-sm"
+                      >
+                        Login
+                      </Link>
+                    </motion.div>
+                  </div>
                 )}
-               
               </>
             )}
           </div>
           <div>
-            <motion.div
-
-              className="block md:hidden"
-              onClick={toggleOpen}
-            >
-              {isOpen ? <EllipsisVertical/> : <EllipsisVertical />}
+            <motion.div className="block md:hidden" onClick={toggleOpen}>
+              {isOpen ? <EllipsisVertical /> : <EllipsisVertical />}
             </motion.div>
           </div>
           <AnimatePresence>

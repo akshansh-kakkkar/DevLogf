@@ -11,14 +11,15 @@ export default function LayoutWrapper({
 }){
     const pathName = usePathname();
     const isAuthpage = pathName === "/auth"
-    const profile = pathName === "/profile" || "/profile/edit"
+    const profile = pathName.startsWith("/profile")
+    const dashbaord = pathName.startsWith('/dashboard')
     return(
         <div className="flex-1 flex flex-col">
             {!isAuthpage && <Navbar />}
             <Loading>
                 {children}
             </Loading>
-            {!isAuthpage &&  !profile && <Footer />}
+            {!isAuthpage &&  !profile && !dashbaord && <Footer />}
         </div>
     )
 }
