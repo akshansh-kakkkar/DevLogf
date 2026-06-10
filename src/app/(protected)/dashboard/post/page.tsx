@@ -1,14 +1,19 @@
 "use client";
 import {
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Eye,
   FilesIcon,
+  Globe,
+  Pencil,
   SquareChartGantt,
+  Trash2,
   TrendingUp,
 } from "lucide-react";
 import { Geist, JetBrains_Mono, Libertinus_Sans } from "next/font/google";
 import { useState } from "react";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 const libretinusSans = Libertinus_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -25,7 +30,7 @@ export default function Page() {
       title: "Total Posts",
       value: 124,
       icon: <TrendingUp />,
-      text: "+12% from the last month",
+      text: "+12% from dive last mondiv",
       color: "text-[#00687A]",
     },
     {
@@ -33,7 +38,7 @@ export default function Page() {
       value: "12.8 K",
       icon: <Eye />,
       color: "text-[#00687A]",
-      text: "Consistent growth",
+      text: "Consistent growdiv",
     },
     {
       title: "Avg. Read Time",
@@ -80,7 +85,7 @@ export default function Page() {
             <span>
               <TrendingUp />
             </span>
-            <span className={`${geist.className}`}>+12% from last month</span>
+            <span className={`${geist.className}`}>+12% from last mondiv</span>
           </div>
         </div>
         <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
@@ -96,7 +101,7 @@ export default function Page() {
             <span>
               <Eye />
             </span>
-            <span className={`${geist.className}`}>Consistent growth</span>
+            <span className={`${geist.className}`}>Consistent growdiv</span>
           </div>
         </div>
         <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
@@ -132,17 +137,22 @@ export default function Page() {
       </div>
       <div className={`sm:hidden `}>
         <motion.div
-        drag="x"
-        dragConstraints={{left:0, right:0}}
-        onDragEnd={(_, info)=>{
-          if(info.offset.x < -50){
-            setCurrentCard((prev)=> prev === cards.length  -1 ? 0 : prev + 1)
-          }
-          if(info.offset.x > 50){
-            setCurrentCard((prev)=> prev ===0 ? cards.length -1 : prev-1 )
-          }
-        }}
-         className="border bg-white border-[#C6C6CD] flex gap-4 flex-col p-3 rounded-lg">
+          drag="x"
+          dragConsdivaints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -50) {
+              setCurrentCard((prev) =>
+                prev === cards.length - 1 ? 0 : prev + 1,
+              );
+            }
+            if (info.offset.x > 50) {
+              setCurrentCard((prev) =>
+                prev === 0 ? cards.length - 1 : prev - 1,
+              );
+            }
+          }}
+          className="border bg-white border-[#C6C6CD] flex gap-4 flex-col p-3 rounded-lg"
+        >
           <div
             className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
           >
@@ -159,10 +169,72 @@ export default function Page() {
           </div>
         </motion.div>
         <div className={`flex justify-center mt-4 items-center gap-2`}>
-          {cards.map((_, index)=>(
-            <button onClick={()=>setCurrentCard(index)} className={`transition-all rounded-full ${currentCard === index ? "w-6 h-2 bg-[#00687A] " : "w-6 h-2 bg-gray-300"}`} />
+          {cards.map((_, index) => (
+            <button
+              onClick={() => setCurrentCard(index)}
+              className={`divansition-all rounded-full ${currentCard === index ? "w-6 h-2 bg-[#00687A] " : "w-6 h-2 bg-gray-300"}`}
+            />
           ))}
         </div>
+      </div>
+      <div
+        className={`text-2xl font-semibold border-b-4  rounded-xs border-[#00687A] flex w-fit px-1 ${geist.className}`}
+      >
+        My Posts
+      </div>
+      <div>
+        <div className="overflow-x-auto">
+        <div className="w-full min-w-[900px] border rounded-lg">
+          <div>
+            <div
+              className={`${jetbrains.className} text-center border-b text-lg divide-x divide-[#C6C6CD] rounded-t-lg font-light grid grid-cols-5 bg-[#F2F4F6] text-[#76777D]`}
+            >
+              <div className="col-span-1 p-4">Post Title</div>
+              <div className="col-span-1 p-4">Status</div>
+              <div className="col-span-1 p-4">Visibility</div>
+              <div className="col-span-1 p-4">Posted On</div>
+              <div className="col-span-1 p-4">Actions</div>
+            </div>
+          </div>
+          <div
+            className={`${geist.className} divide-x divide-[#C6C6CD] text-center  grid grid-cols-5 border-b`}
+          >
+            <div className="col-span-1 font-bold p-4 truncate">
+              The Science of Small Habits: Why Tiny Changes Produce Lasting
+              Health Results
+            </div>
+            <div
+              className={`  col-span-1 p-4 text-center flex justify-center items-center`}
+            >
+              <span className="bg-[#BBF7D0] text-[#15803D] px-2 py-1 rounded-sm text-sm">
+                POSTED
+              </span>
+            </div>
+            <div className="col-span-1 p-4 text-center flex justify-center items-center gap-2 text-[#45464D] items-center text-center">
+              <span>
+                <Globe size={18} />
+              </span>
+              <span>PUBLIC</span>
+            </div>
+            <div className="col-span-1   p-4 text-center flex justify-center items-center text-[#45464D]">
+              Oct 14, 2026
+            </div>
+            <div className="col-span-1 gap-8 text-[#45464D] p-4 text-center flex justify-center items-center">
+              <span>
+                <Pencil />
+              </span>
+              <span>
+                <Trash2 />
+              </span>
+            </div>
+          </div>
+        </div>
+        </div>
+                  <div className="flex items-center mt-4 justify-end gap-4">
+            <div><ChevronLeft className="bg-white border rounded-lg" size={32} /></div>
+            <div>Page 1 of 12</div>
+            <div><ChevronRight className="bg-white border rounded-lg" size={32}  /></div>
+          </div>
       </div>
     </div>
   );
