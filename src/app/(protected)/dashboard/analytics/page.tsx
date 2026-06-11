@@ -38,6 +38,7 @@ export default function Page() {
     totalReads: 0,
     avgReadTime: 0,
     draftPending: 0,
+    totalLikes : 0,
   });
   useEffect(() => {
     const getStats = async () => {
@@ -72,8 +73,8 @@ export default function Page() {
       text: "Consistent growth",
     },
     {
-      title: "Avg. Read Time",
-      value: stats.avgReadTime || 0,
+      title: "Total Likes",
+      value: stats.totalLikes || 0,
       icon: <SquareChartGantt />,
       color: "text-[#76777D]",
       text: "Content focus",
@@ -191,7 +192,7 @@ export default function Page() {
                 Total Likes
               </div>
               <div className={`${geist.className} text-4xl font-semibold`}>
-                {formatNumber(stats.avgReadTime || 0)}
+                {formatNumber(stats.totalLikes || 0)}
               </div>
               <div className="flex gap-2 text-[#76777D]">
                 <span>

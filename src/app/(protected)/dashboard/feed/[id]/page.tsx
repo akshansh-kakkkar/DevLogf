@@ -39,6 +39,8 @@ export default function () {
         }
         const data = await res.json();
         setPost(data.post);
+        setLikesCount(data.post.stats.likeCount);
+        setLiked(data.post.hasLiked);
       } catch (error) {
         toast.error("Something went wrong");
       } finally {
@@ -63,10 +65,12 @@ export default function () {
   } else if (post) {
     images = getImage(post.content);
   }
+  const [likesCount, setLikesCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
   const handleLike = async ()=>{
     const newLiked = !liked;
-    setLiked(newLiked)
+    setLiked(newLiked);
+    setLikesCount(prev =>newLiked ? prev + 1 : prev -1)
     try{
       setLikeLoading(true)
       const res  = await fetch(`/api/posts/${id}/like`, {
@@ -78,6 +82,7 @@ export default function () {
       }
     }catch(e){
       setLiked(!newLiked)
+      setLikesCount(prev => newLiked ? prev - 1 : prev+1)
       toast.error("failed to like the post. Try not to spam")
     }
     finally{
@@ -112,9 +117,12 @@ export default function () {
               })}
             </div>
           </div>
-          <button onClick={handleLike} disabled={likeLoading}>
-            <Heart  className= {` ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={24}/>
+          <div className={`${poppins.className} flex items-center gap-4 border  px-4 py-1 text-center bg-white rounded-2xl justify-between `}>
+          <button onClick={handleLike}  disabled={likeLoading}>
+            <Heart  className= {` ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={32}/>
           </button>
+          <span className="text-xl font-semibold">{likesCount}</span>
+          </div>
           </div>
           <div className="flex justify-center items-center">
             {images.length > 0 && (

@@ -20,18 +20,26 @@ export async function GET() {
       },
     });
     const totalReads = await prisma.postView.count({
-      where : {
-        post : {
-          authorId  : session.user.id
+      where: {
+        post: {
+          authorId: session.user.id
+        }
+      }
+    })
+    const totalLikes = await prisma.like.count({
+      where: {
+        post: {
+          authorId: session.user.id
         }
       }
     })
     return NextResponse.json({
       totalPosts,
       draftPending,
-      totalReads
+      totalReads,
+      totalLikes
     });
   } catch (error) {
-   return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 }

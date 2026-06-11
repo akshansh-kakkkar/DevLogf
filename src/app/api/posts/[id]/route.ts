@@ -64,7 +64,8 @@ export async function GET(
 
     const fullPost = {
       ...Post,
-      stats: {
+      hasLiked: session ? Post.likes.some((like: any) => like.userId === String(session.user.id)) : false,
+      stats: {       
         commentCount: Post.comments.length,
         likeCount: Post.likes.length,
         wordCount,
