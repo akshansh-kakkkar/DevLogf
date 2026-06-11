@@ -18,8 +18,8 @@ const libretinusSans = Libertinus_Sans({
   weight: ["400", "700"],
 });
 const poppins2 = Poppins({
-  subsets : ['latin'],
-  weight : ['400']
+  subsets: ['latin'],
+  weight: ['400']
 })
 export default function () {
   const params = useParams();
@@ -165,17 +165,17 @@ export default function () {
             dangerouslySetInnerHTML={{ __html: post.content }}
             className={`${poppins.className} [&_ul]:list-disc [&_mark]:bg-[#00687A]/80 [&_mark]:text-white [&_mark]:px-2 [&_mark]:py-1 w-full ProseMirror [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:mt-2 [&_h1]:mb-2 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:mt-2 [&_h2]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4  [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_pre]:bg-gray-900 [&_pre]:text-white [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:my-4 [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6`}
           />
-                <div className="gap-2 my-4 overflow-x-auto flex">
-        {post.postTags.map((postTag: any) => (
-          <span
-            className={`text-sm gap-2 flex md:text-lg bg-[#00687A] text-white px-3 py-1 rounded-md ${poppins2.className}`}
-          >
-            <span>#</span> {postTag.tag.name}
-          </span>
-        ))}
-      </div>
+          <div className="gap-2 my-4 overflow-x-auto flex">
+            {post.postTags.map((postTag: any) => (
+              <span
+                className={`text-sm gap-2 flex md:text-lg bg-[#00687A] text-white px-3 py-1 rounded-md ${poppins2.className}`}
+              >
+                <span>#</span> {postTag.tag.name}
+              </span>
+            ))}
+          </div>
         </div>
-        
+
       )}
 
     </>

@@ -31,11 +31,13 @@ model User {
   posts         Post[]
   sessions      Session[]
   emailupdates  emailupdate?
+  postViews     PostView[]
 }
 
 model Post {
   id          Int        @id @default(autoincrement())
   title       String
+  postViews   PostView[]
   content     String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -50,6 +52,17 @@ model Post {
   likes       Like[]
   author      User       @relation(fields: [authorId], references: [id])
   postTags    PostTag[]
+}
+
+model PostView {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
 }
 
 model PostTag {

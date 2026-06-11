@@ -38,6 +38,26 @@ export async function GET(
     if (!Post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+    const session = await getSession();
+    if(session &&  String(session.user.id) !== Post.authorId){
+      try{
+        await prisma.postView.upsert({
+          where : {
+            postId_userId : {
+              postId : postId,
+              userId : String(session.user.id),
+            },
+          },
+          update :{},
+          create :{
+            postId : postId,
+            userId : String(session.user.id)
+          }
+        })
+      }catch(error){
+        console.error("Error fetching views" , error)
+      }
+    }
     const plainText = Post.content.replace(/<[^>]*>/g, "").trim();
     const wordCount = plainText.length === 0 ? 0 : plainText.split(/\s+/).length;
     const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));

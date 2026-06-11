@@ -148,7 +148,7 @@ export default function AppDrawer() {
                     <div className="flex flex-col  justify-center items-center text-center duration-300  gap-2 text-sm transition-all">
                       <Link
                         href="/dashboard/analytics"
-                        className={`border border-[#00687A] transition-all   duration-300 rounded-full flex  items-center text-center justify-center  bg-white shadow-lg ${pathName === "/dashboard/create-post" ? "" : "hover-:bg-accent p-2"}`}
+                        className={`border border-[#00687A] transition-all   duration-300 rounded-full flex  items-center text-center justify-center  bg-white shadow-lg ${pathName === "/dashboard/create-post" ? "" : "hover-:bg-accent "}`}
                       >
                         <span>
                           <ChartBarBigIcon
