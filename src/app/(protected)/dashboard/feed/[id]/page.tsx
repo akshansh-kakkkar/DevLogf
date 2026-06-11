@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft, ChevronRight, Dot, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Dot, Heart, Loader2 } from "lucide-react";
 import { JetBrains_Mono, Libertinus_Sans, Poppins } from "next/font/google";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -26,6 +26,7 @@ export default function () {
   const id = params.id as string;
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<any>(null);
+  const [liked, setLiked] = useState<any>(null)
   useEffect(() => {
     const getSinglePost = async () => {
       try {
@@ -62,10 +63,29 @@ export default function () {
   } else if (post) {
     images = getImage(post.content);
   }
+  const [likeLoading, setLikeLoading] = useState(false);
+  const handleLike = async ()=>{
+    const newLiked = !liked;
+    setLiked(newLiked)
+    try{
+      setLikeLoading(true)
+      const res  = await fetch(`/api/posts/${id}/like`, {
+        method : "POST"
+      })
+      const data = await res.json();
+      if(!res.ok){
+        throw   new Error() 
+      }
+    }catch(e){
+      setLiked(!newLiked)
+      toast.error("failed to like the post. Try not to spam")
+    }
+    finally{
+      setLikeLoading(false)
+    }
+  }
   const [currentImage, setCurrentImage] = useState(0);
-
   const [direction, setDirection] = useState(1);
-
   return (
     <>
       {loading || !post ? (
@@ -74,7 +94,8 @@ export default function () {
         </div>
       ) : (
         <div className="mt-12  mx-5 md:mx-12 lg:mx-22 flex gap-7 flex-col">
-          <div className="flex items-center gap-2">
+         <div className="flex justify-between items-center ">
+          <div className="flex items-center  gap-2">
             <div
               className={`${jetbrains.className}  text-[#45464D] bg-[#E6E8EA] p-1 rounded-sm text-xs font-bold `}
             >
@@ -90,6 +111,10 @@ export default function () {
                 addSuffix: true,
               })}
             </div>
+          </div>
+          <button onClick={handleLike} disabled={likeLoading}>
+            <Heart  className= {` ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={24}/>
+          </button>
           </div>
           <div className="flex justify-center items-center">
             {images.length > 0 && (

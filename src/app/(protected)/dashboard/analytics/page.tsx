@@ -5,8 +5,8 @@ import {
   ChevronRight,
   Clock,
   Eye,
-  FilesIcon,
   Globe,
+  Loader2,
   Pencil,
   SquareChartGantt,
   ThumbsUp,
@@ -17,6 +17,7 @@ import { Geist, JetBrains_Mono, Libertinus_Sans } from "next/font/google";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Post } from "../../../Types/index";
+import { toast } from "sonner";
 const libretinusSans = Libertinus_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -29,6 +30,9 @@ const jetbrains = JetBrains_Mono({
 });
 
 export default function Page() {
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsLoading2, setAnalyticsLoading2] = useState(false);
+  const [analyticsLoading3, setAnalyticsLoading3] = useState(false);
   const [stats, setstats] = useState({
     totalPosts: 0,
     totalReads: 0,
@@ -37,18 +41,26 @@ export default function Page() {
   });
   useEffect(() => {
     const getStats = async () => {
-      const res = await fetch("/api/dashboard/stats");
-      const data = await res.json();
-      console.log(data);
-      setstats(data);
+      try {
+        setAnalyticsLoading(true);
+        const res = await fetch("/api/dashboard/stats");
+        const data = await res.json();
+        console.log(data);
+        setstats(data);
+      } catch (error) {
+        toast.error("Failed to fetch stats");
+      } finally {
+        setAnalyticsLoading(false);
+      }
     };
+
     getStats();
   }, []);
   const cards = [
     {
       title: "Total Posts",
       value: stats.totalPosts || 0,
-      icon: <TrendingUp />, 
+      icon: <TrendingUp />,
       text: "Post regularly",
       color: "text-[#00687A]",
     },
@@ -76,25 +88,40 @@ export default function Page() {
   ];
   const [currentCard, setCurrentCard] = useState(0);
   const [posts, setposts] = useState<Post[]>([]);
-  const [postdata, setPostdata] = useState([]);
-
   useEffect(() => {
     const getPosts = async () => {
-      const res = await fetch("/api/dashboard/posts");
-      const data = await res.json();
-      setposts(data.posts);
+      try {
+        setAnalyticsLoading3(true);
+        const res = await fetch("/api/dashboard/posts");
+        const data = await res.json();
+        setposts(data.posts);
+      } catch (error) {
+        toast.error("Failed to fetch posts");
+      } finally {
+        setAnalyticsLoading3(false);
+      }
     };
+
     getPosts();
   }, []);
 
-  useEffect(() => {
-    const getTableData = async () => {
-      const res = await fetch("/api/post/");
-      const data = await res.json();
-      setPostdata(data.postdata);
-    };
-    getTableData();
-  }, []);
+  // useEffect(() => {
+  //   const getTableData = async () => {
+  //     try {
+  //       setAnalyticsLoading2(true);
+  //       const res = await fetch("/api/post/");
+  //       const data = await res.json();
+  //       setPostdata(data.postdata);
+  //     } catch (error) {
+  //       toast.error("failed to fetch post data.");
+  //     } finally {
+  //       setAnalyticsLoading2(false);
+  //     }
+  //   };
+
+  //   getTableData();
+  // }, []);
+
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en", {
       notation: "compact",
@@ -102,199 +129,212 @@ export default function Page() {
     }).format(num);
   };
   return (
-    <div className="lg:mt-12  mt-4 px-4 lg:px-22 flex-col flex gap-6 ">
-      <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
-        <div
-          className={`${geist.className} text-[#2D2D2D] text-4xl font-semibold`}
-        >
-          Posts Management
+    <>
+      {analyticsLoading || analyticsLoading2 || analyticsLoading3 ? (
+        <div className="flex flex-col justify-center h-full items-center text-center">
+          <Loader2 className="animate-spin text-[#00687A]" size={48} />
         </div>
-        <div className={`${geist.className} text-[#45464D]`}>
-          Review and Manage your posts and documentations{" "}
-        </div>
-      </div>
-      <div
-        className={`text-2xl font-semibold border-b-4  rounded-xs border-[#00687A] flex w-fit px-1 ${geist.className}`}
-      >
-        Quick Stats
-      </div>
-      <div className=" hidden sm:grid  grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
-        <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
+      ) : (
+        <div className="lg:mt-12  mt-4 px-4 lg:px-22 flex-col flex gap-6 ">
+          <div className="flex  sm:justify-start justify-center flex-col gap-4 border-[#C6C6CD] border-b-2 pb-2 ">
+            <div
+              className={`${geist.className} text-[#2D2D2D] text-4xl font-semibold`}
+            >
+              Posts Management
+            </div>
+            <div className={`${geist.className} text-[#45464D]`}>
+              Review and Manage your posts and documentations{" "}
+            </div>
+          </div>
           <div
-            className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
+            className={`text-2xl font-semibold border-b-4  rounded-xs border-[#00687A] flex w-fit px-1 ${geist.className}`}
           >
-            Total Posts
+            Quick Stats
           </div>
-          <div className={`${geist.className} text-4xl font-semibold`}>
-            {stats.totalPosts || 0}
-          </div>
-          <div className="flex gap-2 text-[#00687A]">
-            <span>
-              <TrendingUp />
-            </span>
-            <span className={`${geist.className}`}>Post regularly</span>
-          </div>
-        </div>
-        <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
-          <div
-            className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
-          >
-            Total Reads
-          </div>
-          <div className={`${geist.className} text-4xl font-semibold`}>
-            {formatNumber(stats.totalReads || 0)}
-          </div>
-          <div className="flex gap-2 text-[#00687A]">
-            <span>
-              <Eye />
-            </span>
-            <span className={`${geist.className}`}>Consistent growth</span>
-          </div>
-        </div>
-        <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
-          <div
-            className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
-          >
-            Total Likes
-          </div>
-          <div className={`${geist.className} text-4xl font-semibold`}>
-            {formatNumber(stats.avgReadTime || 0)}
-          </div>
-          <div className="flex gap-2 text-[#76777D]">
-            <span>
-              <ThumbsUp />
-            </span>
-            <span className={`${geist.className}`}>Content focus</span>
-          </div>
-        </div>
-        <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
-          <div
-            className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
-          >
-            Drafts Pending
-          </div>
-          <div className={`${geist.className} text-4xl font-semibold`}>
-            {formatNumber(stats.draftPending)}
-          </div>
-          <div className="flex gap-2 text-[#93000A]">
-            <span>
-              <Clock />
-            </span>
-            <span className={`${geist.className}`}>Your review required</span>
-          </div>
-        </div>
-      </div>
-      <div className={`sm:hidden `}>
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragEnd={(_, info) => {
-            if (info.offset.x < -50) {
-              setCurrentCard((prev) =>
-                prev === cards.length - 1 ? 0 : prev + 1,
-              );
-            }
-            if (info.offset.x > 50) {
-              setCurrentCard((prev) =>
-                prev === 0 ? cards.length - 1 : prev - 1,
-              );
-            }
-          }}
-          className="border bg-white border-[#C6C6CD] flex gap-4 flex-col p-3 rounded-lg"
-        >
-          <div
-            className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
-          >
-            {cards[currentCard].title}
-          </div>
-          <div className={`${geist.className} text-4xl font-semibold`}>
-            {cards[currentCard].value}
-          </div>
-          <div className={`${cards[currentCard].color} flex gap-2`}>
-            <span>{cards[currentCard].icon}</span>
-            <span className={`${geist.className}`}>
-              {cards[currentCard].text}
-            </span>
-          </div>
-        </motion.div>
-        <div className={`flex justify-center mt-4 items-center gap-2`}>
-          {cards.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentCard(index)}
-              className={`divansition-all rounded-full ${currentCard === index ? "w-6 h-2 bg-[#00687A] " : "w-6 h-2 bg-gray-300"}`}
-            />
-          ))}
-        </div>
-      </div>
-      <div
-        className={`text-2xl font-semibold border-b-4  rounded-xs border-[#00687A] flex w-fit px-1 ${geist.className}`}
-      >
-        My Posts
-      </div>
-      <div>
-        <div className="overflow-x-auto">
-          <div className="w-full min-w-[900px] border rounded-lg">
-            <div>
+          <div className=" hidden sm:grid  grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
+            <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
               <div
-                className={`${jetbrains.className} text-center border-b text-lg divide-x divide-[#C6C6CD] rounded-t-lg font-light grid grid-cols-5 bg-[#F2F4F6] text-[#76777D]`}
+                className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
               >
-                <div className="col-span-1 p-4">Post Title</div>
-                <div className="col-span-1 p-4">Status</div>
-                <div className="col-span-1 p-4">Visibility</div>
-                <div className="col-span-1 p-4">Posted On</div>
-                <div className="col-span-1 p-4">Actions</div>
+                Total Posts
+              </div>
+              <div className={`${geist.className} text-4xl font-semibold`}>
+                {stats.totalPosts || 0}
+              </div>
+              <div className="flex gap-2 text-[#00687A]">
+                <span>
+                  <TrendingUp />
+                </span>
+                <span className={`${geist.className}`}>Post regularly</span>
               </div>
             </div>
-            {posts.map((post) => (
+            <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
               <div
-                key={post.id}
-                className={`${geist.className} divide-x divide-[#C6C6CD] text-center  grid grid-cols-5 border-b`}
+                className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
               >
-                <div className="col-span-1 font-bold p-4 truncate">
-                  {post.title}
-                </div>
-                <div
-                  className={`  col-span-1 p-4 text-center flex justify-center items-center`}
-                >
-                  <span className="bg-[#BBF7D0] text-[#15803D] px-2 py-1 rounded-sm text-sm">
-                    {post.isDraft ? "Draft" : "Posted"}
-                  </span>
-                </div>
-                <div className="col-span-1 p-4 text-center flex justify-center items-center gap-2 text-[#45464D] items-center text-center">
-                  <span>
-                    <Globe size={18} />
-                  </span>
-                  <span>{post.visibility}</span>
-                </div>
-                <div className="col-span-1   p-4 text-center flex justify-center items-center text-[#45464D]">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </div>
-                <div className="col-span-1 gap-8 text-[#45464D] p-4 text-center flex justify-center items-center">
-                  <span>
-                    <ChartColumn />
-                  </span>
-                  <span>
-                    <Pencil />
-                  </span>
-                  <span>
-                    <Trash2 />
-                  </span>
-                </div>
+                Total Reads
               </div>
-            ))}
+              <div className={`${geist.className} text-4xl font-semibold`}>
+                {formatNumber(stats.totalReads || 0)}
+              </div>
+              <div className="flex gap-2 text-[#00687A]">
+                <span>
+                  <Eye />
+                </span>
+                <span className={`${geist.className}`}>Consistent growth</span>
+              </div>
+            </div>
+            <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
+              <div
+                className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
+              >
+                Total Likes
+              </div>
+              <div className={`${geist.className} text-4xl font-semibold`}>
+                {formatNumber(stats.avgReadTime || 0)}
+              </div>
+              <div className="flex gap-2 text-[#76777D]">
+                <span>
+                  <ThumbsUp />
+                </span>
+                <span className={`${geist.className}`}>Content focus</span>
+              </div>
+            </div>
+            <div className="sm:col-span-1 border flex flex-col gap-2 border-[#C6C6CD] bg-white p-6 rounded-lg">
+              <div
+                className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
+              >
+                Drafts Pending
+              </div>
+              <div className={`${geist.className} text-4xl font-semibold`}>
+                {formatNumber(stats.draftPending)}
+              </div>
+              <div className="flex gap-2 text-[#93000A]">
+                <span>
+                  <Clock />
+                </span>
+                <span className={`${geist.className}`}>
+                  Your review required
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className={`sm:hidden `}>
+            <motion.div
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -50) {
+                  setCurrentCard((prev) =>
+                    prev === cards.length - 1 ? 0 : prev + 1,
+                  );
+                }
+                if (info.offset.x > 50) {
+                  setCurrentCard((prev) =>
+                    prev === 0 ? cards.length - 1 : prev - 1,
+                  );
+                }
+              }}
+              className="border bg-white border-[#C6C6CD] flex gap-4 flex-col p-3 rounded-lg"
+            >
+              <div
+                className={`${jetbrains.className} font-medium text-xl text-[#76777D]`}
+              >
+                {cards[currentCard].title}
+              </div>
+              <div className={`${geist.className} text-4xl font-semibold`}>
+                {cards[currentCard].value}
+              </div>
+              <div className={`${cards[currentCard].color} flex gap-2`}>
+                <span>{cards[currentCard].icon}</span>
+                <span className={`${geist.className}`}>
+                  {cards[currentCard].text}
+                </span>
+              </div>
+            </motion.div>
+            <div className={`flex justify-center mt-4 items-center gap-2`}>
+              {cards.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentCard(index)}
+                  className={`divansition-all rounded-full ${currentCard === index ? "w-6 h-2 bg-[#00687A] " : "w-6 h-2 bg-gray-300"}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div
+            className={`text-2xl font-semibold border-b-4  rounded-xs border-[#00687A] flex w-fit px-1 ${geist.className}`}
+          >
+            My Posts
+          </div>
+          <div>
+            <div className="overflow-x-auto">
+              <div className="w-full min-w-[900px] border rounded-lg">
+                <div>
+                  <div
+                    className={`${jetbrains.className} text-center border-b text-lg divide-x divide-[#C6C6CD] rounded-t-lg font-light grid grid-cols-5 bg-[#F2F4F6] text-[#76777D]`}
+                  >
+                    <div className="col-span-1 p-4">Post Title</div>
+                    <div className="col-span-1 p-4">Status</div>
+                    <div className="col-span-1 p-4">Visibility</div>
+                    <div className="col-span-1 p-4">Posted On</div>
+                    <div className="col-span-1 p-4">Actions</div>
+                  </div>
+                </div>
+                {posts.map((post) => (
+                  <div
+                    key={post.id}
+                    className={`${geist.className} divide-x divide-[#C6C6CD] text-center  grid grid-cols-5 border-b`}
+                  >
+                    <div className="col-span-1 font-bold p-4 truncate">
+                      {post.title}
+                    </div>
+                    <div
+                      className={`  col-span-1 p-4 text-center flex justify-center items-center`}
+                    >
+                      <span className="bg-[#BBF7D0] text-[#15803D] px-2 py-1 rounded-sm text-sm">
+                        {post.isDraft ? "Draft" : "Posted"}
+                      </span>
+                    </div>
+                    <div className="col-span-1 p-4 text-center flex justify-center items-center gap-2 text-[#45464D] items-center text-center">
+                      <span>
+                        <Globe size={18} />
+                      </span>
+                      <span>{post.visibility}</span>
+                    </div>
+                    <div className="col-span-1   p-4 text-center flex justify-center items-center text-[#45464D]">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="col-span-1 gap-8 text-[#45464D] p-4 text-center flex justify-center items-center">
+                      <span>
+                        <ChartColumn />
+                      </span>
+                      <span>
+                        <Pencil />
+                      </span>
+                      <span>
+                        <Trash2 />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center mt-4 justify-end gap-4">
+              <div>
+                <ChevronLeft className="bg-white border rounded-lg" size={32} />
+              </div>
+              <div>Page 1 of 12</div>
+              <div>
+                <ChevronRight
+                  className="bg-white border rounded-lg"
+                  size={32}
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <div className="flex items-center mt-4 justify-end gap-4">
-          <div>
-            <ChevronLeft className="bg-white border rounded-lg" size={32} />
-          </div>
-          <div>Page 1 of 12</div>
-          <div>
-            <ChevronRight className="bg-white border rounded-lg" size={32} />
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

@@ -20,7 +20,6 @@ const Libretinus = Libertinus_Sans({
   weight: ["700"],
 });
 const SideBar = () => {
-  const router = useRouter();
   const pathName = usePathname();
   return (
     <div className="w-[280px]  xl:block hidden fixed left-0 top-[82px]  border-r bg-white h-[90vh]">
