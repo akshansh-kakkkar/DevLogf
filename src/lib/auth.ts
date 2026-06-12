@@ -19,12 +19,14 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_SECRET_KEY!,
     },
   },
-  account : {
-    accountLinking : {
-      enabled : true,
-      trustedProviders : ["google", "github"]
-    }
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"],
+    },
   },
+  trustedOrigins: ["http://localhost:3000", "https://dev-log-sepia.vercel.app"],
+
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 });
