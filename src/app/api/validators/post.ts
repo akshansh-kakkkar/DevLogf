@@ -7,7 +7,7 @@ export const visibilitySchema = z.enum([
 
 export const createPostSchema = z.object({
     title: z
-        .string()
+        .string() 
         .min(3, "title too short")
         .max(100),
     content: z

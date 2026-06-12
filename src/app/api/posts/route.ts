@@ -11,8 +11,8 @@
       const limit = parseInt(url.searchParams.get("limit") || "10");
       const skip = (page - 1) * limit;
       const whereClause = {
-        status: "PUBLISHED",
-        visibility: "PUBLIC" ,
+        status: "PUBLISHED" as const,
+        visibility: "PUBLIC" as const,
         OR: [
           {
             title: {

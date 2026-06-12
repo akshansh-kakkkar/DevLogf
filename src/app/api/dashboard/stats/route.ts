@@ -16,7 +16,7 @@ export async function GET() {
     const draftPending = await prisma.post.count({
       where: {
         authorId: session.user.id,
-        isDraft: true,
+        status: "DRAFT",
       },
     });
     const totalReads = await prisma.postView.count({
