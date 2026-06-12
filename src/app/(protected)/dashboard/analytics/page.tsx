@@ -293,8 +293,8 @@ export default function Page() {
                     <div
                       className={`  col-span-1 p-4 text-center flex justify-center items-center`}
                     >
-                      <span className={`px-2 py-1 w-[70px] rounded-sm text-sm border-2  ${post.isDraft ? "bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]" : "bg-[#DCFCE7]  border-[#BBF7D0] text-[#15803D]"  }`}>
-                        {post.isDraft ? "Draft" : "Posted" }
+                      <span className={`px-2 py-1 w-[70px] rounded-sm text-sm border-2  ${post.status  === "DRAFT" ? "bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]" : post.status === "PUBLISHED" ? "bg-[#DCFCE7]  border-[#BBF7D0] text-[#15803D] " : post.status === "SCHEDULED" ? "bg-[#dbeafe] border-[#93C5FD]  text-[#1D4ED8]" : "bg-gray-100 border-gray-300 text-gray-700"  }`}>
+                        {post.status}
                       </span>
                     </div>
                     <div className="col-span-1 p-4 text-center flex justify-center items-center gap-2 text-[#45464D] items-center text-center">
