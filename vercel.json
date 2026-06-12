@@ -5,7 +5,8 @@
             "schedule" : "0 0 * * *"
         },
         {
-            "path":"/api/cron/publish-scheduled"
+            "path":"/api/cron/publish-scheduled",
+            "schedule" :"* * * * *"
         }
     ]
 }
