@@ -170,6 +170,7 @@ export default function Page() {
       <div className="lg:col-span-4 py-8 px-6 ">
         <div>
           <textarea
+          disabled={submitting}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";
@@ -281,6 +282,7 @@ export default function Page() {
             </>
           )}
           <TipTapEditor
+        
             images={images}
             setImages={setImages}
             content={content}

@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = parseInt(url.searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
+    
     const whereClause = {
       status: "PUBLISHED" as const,
       visibility: "PUBLIC" as const,

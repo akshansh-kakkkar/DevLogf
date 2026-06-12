@@ -8,25 +8,18 @@ import {
   Globe,
   Link2,
   Loader2,
-  Lock,
   LockKeyhole,
   Pencil,
   SquareChartGantt,
   ThumbsUp,
   Trash2,
   TrendingUp,
-  Unlink2,
-  UserKey,
 } from "lucide-react";
-import { Geist, JetBrains_Mono, Libertinus_Sans } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Post } from "@/app/Types";
-const libretinusSans = Libertinus_Sans({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 const geist = Geist({
   subsets: ["latin"],
 });
@@ -94,13 +87,20 @@ export default function Page() {
   ];
   const [currentCard, setCurrentCard] = useState(0);
   const [posts, setposts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [pagenation, setPagenation] = useState({
+    currentPage : 1,
+    totalPages : 1,
+    totalPosts : 0
+  })
   useEffect(() => {
     const getPosts = async () => {
       try {
         setAnalyticsLoading3(true);
-        const res = await fetch("/api/dashboard/posts");
+        const res = await fetch(`/api/dashboard/posts?page=${page}&limit=5`);
         const data = await res.json();
         setposts(data.posts);
+        setPagenation(data.pagination)
       } catch (error) {
         toast.error("Failed to fetch posts");
       } finally {
@@ -109,24 +109,8 @@ export default function Page() {
     };
 
     getPosts();
-  }, []);
+  }, [page]);
 
-  // useEffect(() => {
-  //   const getTableData = async () => {
-  //     try {
-  //       setAnalyticsLoading2(true);
-  //       const res = await fetch("/api/post/");
-  //       const data = await res.json();
-  //       setPostdata(data.postdata);
-  //     } catch (error) {
-  //       toast.error("failed to fetch post data.");
-  //     } finally {
-  //       setAnalyticsLoading2(false);
-  //     }
-  //   };
-
-  //   getTableData();
-  // }, []);
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en", {
@@ -328,16 +312,16 @@ export default function Page() {
               </div>
             </div>
             <div className="flex items-center mt-4 justify-end gap-4">
-              <div>
-                <ChevronLeft className="bg-white border rounded-lg" size={32} />
-              </div>
-              <div>Page 1 of 12</div>
-              <div>
+              <button className="cursor-pointer bg-white disabled:hover:text-[#00687A] disabled:hover:bg-white hover:bg-[#00687A] hover:text-white transition-all duration-300 border-[#00687A] disabled:cursor-not-allowed rounded-lg border text-[#00687A]" disabled={page===1} onClick={()=>setPage((prev)=>prev-1)}>
+                <ChevronLeft  className="" size={32} />
+              </button>
+              <div>Page {pagenation.currentPage} of {pagenation.totalPages}</div>
+              <button className="cursor-pointer disabled:hover:bg-white disabled:hover:text-[#00687A] bg-white border-[#00687A] disabled:cursor-not-allowed hover:bg-[#00687A] hover:text-white transition-all duration-300 rounded-lg border text-[#00687A]" disabled={page >= pagenation.totalPages} onClick={()=> setPage((prev)=> prev+1)}>
                 <ChevronRight
-                  className="bg-white border rounded-lg"
+                  className=""
                   size={32}
                 />
-              </div>
+              </button>
             </div>
           </div>
         </div>
