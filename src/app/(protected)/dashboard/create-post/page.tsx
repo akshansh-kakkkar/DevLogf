@@ -71,11 +71,13 @@ export default function Page() {
   const submitPost = async (isDraft: boolean) => {
     setSubmitError(null);
     if (!title.trim()) {
-      setSubmitError(toast.error("Title is required."));
+      setSubmitError("Title Too short");
+      toast.error("Title Too short.")
       return;
     }
     if (content.length < 10) {
-      setSubmitError(toast.error("Content is too short (min 10 characters)."));
+      setSubmitError("min 10 characters are required.");
+      toast.error("min 10 characters are required.")
       return;
     }
 
