@@ -7,6 +7,8 @@ export async function GET(request: Request) {
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    console.log(request.headers.get("authorization"));
+    console.log(process.env.CRON_SECRET);
 
     const now = new Date();
 
@@ -24,7 +26,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      updated : duePosts.count
+      updated: duePosts.count,
     });
   } catch (error) {
     return NextResponse.json(
