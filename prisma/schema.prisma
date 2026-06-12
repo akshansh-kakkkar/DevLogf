@@ -44,11 +44,12 @@ model User {
 model Post {
   id          Int        @id @default(autoincrement())
   title       String
-  status PostStatus @default(DRAFT)
+  status      PostStatus @default(DRAFT)
   postViews   PostView[]
   content     String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  slug        String     @unique
   authorId    String
   ScheduledAt DateTime?
   coverImage  String[]

@@ -4,26 +4,24 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { id } = await params;
-    const postId = parseInt(id);
-    if (isNaN(postId)) {
-      return NextResponse.json({ error: "Invalid Post Id" }, { status: 400 });
-    }
-    const existingPost =await prisma.post.findUnique({
+    const { slug } = await params;
+
+    const existingPost = await prisma.post.findUnique({
       where: {
-        id : postId
-        },
+        slug
+      },
     });
     if (!existingPost) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+    const postId = existingPost.id
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_postId: {

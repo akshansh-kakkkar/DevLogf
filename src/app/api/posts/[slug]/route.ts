@@ -5,19 +5,15 @@ import { updatePostSchema } from "../../validators/post";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const { id } = await params;
-    const postId = parseInt(id);
-    if (isNaN(postId)) {
-      return NextResponse.json({ error: "Invalid Post Id" }, { status: 400 });
-    }
+    const { slug } = await params;
 
     const Post = await prisma.post.findUnique({
       where: {
-        id: postId,
+        slug,
       },
       include: {
         author: true,
@@ -39,36 +35,44 @@ export async function GET(
     if (!Post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-    if(Post.status !== "PUBLISHED" && String(session?.user.id)!== Post.authorId){
-      return NextResponse.json({error : "POST not foun"}, {status : 404})
+    if (
+      Post.status !== "PUBLISHED" &&
+      String(session?.user.id) !== Post.authorId
+    ) {
+      return NextResponse.json({ error: "POST not foun" }, { status: 404 });
     }
-    if(session &&  String(session.user.id) !== Post.authorId){
-      try{
+    if (session && String(session.user.id) !== Post.authorId) {
+      try {
         await prisma.postView.upsert({
-          where : {
-            postId_userId : {
-              postId : postId,
-              userId : String(session.user.id),
+          where: {
+            postId_userId: {
+              postId: Post.id,
+              userId: String(session.user.id),
             },
           },
-          update :{},
-          create :{
-            postId : postId,
-            userId : String(session.user.id)
-          }
-        })
-      }catch(error){
-        console.error("Error fetching views" , error)
+          update: {},
+          create: {
+            postId: Post.id,
+            userId: String(session.user.id),
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching views", error);
       }
     }
     const plainText = Post.content.replace(/<[^>]*>/g, "").trim();
-    const wordCount = plainText.length === 0 ? 0 : plainText.split(/\s+/).length;
+    const wordCount =
+      plainText.length === 0 ? 0 : plainText.split(/\s+/).length;
     const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 200));
 
     const fullPost = {
       ...Post,
-      hasLiked: session ? Post.likes.some((like: any) => like.userId === String(session.user.id)) : false,
-      stats: {       
+      hasLiked: session
+        ? Post.likes.some(
+            (like: any) => like.userId === String(session.user.id),
+          )
+        : false,
+      stats: {
         commentCount: Post.comments.length,
         likeCount: Post.likes.length,
         wordCount,
@@ -76,7 +80,7 @@ export async function GET(
       },
     };
     return NextResponse.json({
-      post: fullPost
+      post: fullPost,
     });
   } catch (error) {
     return NextResponse.json(
@@ -88,18 +92,14 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { id } = await params;
-    const postId = parseInt(id);
-    if (isNaN(postId)) {
-      return NextResponse.json({ error: "Id invalid" }, { status: 400 });
-    }
+    const { slug } = await params;
 
     const body = await request.json();
     const validation = updatePostSchema.safeParse(body);
@@ -111,7 +111,7 @@ export async function PUT(
     }
     const existingPost = await prisma.post.findUnique({
       where: {
-        id: postId,
+        slug,
       },
     });
     if (!existingPost) {
@@ -132,7 +132,7 @@ export async function PUT(
     }
     const updatedPost = await prisma.post.update({
       where: {
-        id: postId,
+        slug,
       },
       data: {
         title: validation.data.title,
@@ -158,26 +158,18 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { id } = await params;
-    const postId = parseInt(id);
-    if (isNaN(postId)) {
-      return NextResponse.json(
-        {
-          error: "Post Not Found",
-        },
-        { status: 404 },
-      );
-    }
+    const { slug } = await params;
+
     const existingPost = await prisma.post.findUnique({
       where: {
-        id: postId,
+        slug,
       },
     });
     if (!existingPost) {
@@ -188,7 +180,7 @@ export async function DELETE(
     }
     await prisma.post.delete({
       where: {
-        id: postId,
+        slug,
       },
     });
     return NextResponse.json(

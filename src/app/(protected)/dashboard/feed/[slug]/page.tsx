@@ -23,7 +23,7 @@ const poppins2 = Poppins({
 })
 export default function () {
   const params = useParams();
-  const id = params.id as string;
+  const slug = params.slug as string;
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<any>(null);
   const [liked, setLiked] = useState<any>(null)
@@ -31,7 +31,7 @@ export default function () {
     const getSinglePost = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/posts/${id}`);
+        const res = await fetch(`/api/posts/${slug}`);
         if (!res.ok) {
           toast.error(
             "something went wrong while fetching the post please refresh this is not my fault",
@@ -47,10 +47,10 @@ export default function () {
         setLoading(false);
       }
     };
-    if (id) {
+    if (slug) {
       getSinglePost();
     }
-  }, [id]);
+  }, [slug]);
   const getImage = (html: string) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return Array.from(doc.querySelectorAll("img"))
@@ -67,25 +67,25 @@ export default function () {
   }
   const [likesCount, setLikesCount] = useState(0);
   const [likeLoading, setLikeLoading] = useState(false);
-  const handleLike = async ()=>{
+  const handleLike = async () => {
     const newLiked = !liked;
     setLiked(newLiked);
-    setLikesCount(prev =>newLiked ? prev + 1 : prev -1)
-    try{
+    setLikesCount(prev => newLiked ? prev + 1 : prev - 1)
+    try {
       setLikeLoading(true)
-      const res  = await fetch(`/api/posts/${id}/like`, {
-        method : "POST"
+      const res = await fetch(`/api/posts/${slug}/like`, {
+        method: "POST"
       })
       const data = await res.json();
-      if(!res.ok){
-        throw   new Error() 
+      if (!res.ok) {
+        throw new Error()
       }
-    }catch(e){
+    } catch (e) {
       setLiked(!newLiked)
-      setLikesCount(prev => newLiked ? prev - 1 : prev+1)
+      setLikesCount(prev => newLiked ? prev - 1 : prev + 1)
       toast.error("failed to like the post. Try not to spam")
     }
-    finally{
+    finally {
       setLikeLoading(false)
     }
   }
@@ -99,30 +99,30 @@ export default function () {
         </div>
       ) : (
         <div className="mt-12  mx-5 md:mx-12 lg:mx-22 flex gap-7 flex-col">
-         <div className="flex justify-between items-center ">
-          <div className="flex items-center  gap-2">
-            <div
-              className={`${jetbrains.className}  text-[#45464D] bg-[#E6E8EA] p-1 rounded-sm text-xs font-bold `}
-            >
-              {post.stats.readingTime}
+          <div className="flex justify-between items-center ">
+            <div className="flex items-center  gap-2">
+              <div
+                className={`${jetbrains.className}  text-[#45464D] bg-[#E6E8EA] p-1 rounded-sm text-xs font-bold `}
+              >
+                {post.stats.readingTime}
+              </div>
+              <div>
+                <Dot className="text-gray-400 " size={42} />
+              </div>
+              <div
+                className={`${jetbrains.className} font-bold text-gray-500 text-xs`}
+              >
+                {formatDistanceToNow(new Date(post.publishedAt), {
+                  addSuffix: true,
+                })}
+              </div>
             </div>
-            <div>
-              <Dot className="text-gray-400 " size={42} />
+            <div className={`${poppins.className} flex items-center gap-4 border  px-4 py-1 text-center bg-white rounded-2xl justify-between `}>
+              <button onClick={handleLike} disabled={likeLoading}>
+                <Heart className={`cursor pointer  ${liked ? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={32} />
+              </button>
+              <span className="text-xl font-semibold">{likesCount}</span>
             </div>
-            <div
-              className={`${jetbrains.className} font-bold text-gray-500 text-xs`}
-            >
-              {formatDistanceToNow(new Date(post.publishedAt), {
-                addSuffix: true,
-              })}
-            </div>
-          </div>
-          <div className={`${poppins.className} flex items-center gap-4 border  px-4 py-1 text-center bg-white rounded-2xl justify-between `}>
-          <button onClick={handleLike}  disabled={likeLoading}>
-            <Heart  className= {`cursor pointer  ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={32}/>
-          </button>
-          <span className="text-xl font-semibold">{likesCount}</span>
-          </div>
           </div>
           <div className="flex justify-center items-center">
             {images.length > 0 && (
@@ -199,8 +199,9 @@ export default function () {
             className={`${poppins.className} [&_ul]:list-disc [&_mark]:bg-[#00687A]/80 [&_mark]:text-white [&_mark]:px-2 [&_mark]:py-1 w-full ProseMirror [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:mt-2 [&_h1]:mb-2 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:mt-2 [&_h2]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-4  [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_pre]:bg-gray-900 [&_pre]:text-white [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:my-4 [&_ul]:ml-6 [&_ol]:list-decimal [&_ol]:ml-6`}
           />
           <div className="gap-2 my-4 overflow-x-auto flex">
-            {post.postTags.map((postTag: any) => (
+            {post.postTags?.map((postTag: any) => (
               <span
+              key={postTag.tag.name}
                 className={`text-sm gap-2 flex md:text-lg bg-[#00687A] text-white px-3 py-1 rounded-md ${poppins2.className}`}
               >
                 <span>#</span> {postTag.tag.name}

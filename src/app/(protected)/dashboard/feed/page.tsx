@@ -79,9 +79,9 @@ export default function Page() {
           </div>
           <div className=" flex flex-col gap-12 lg:mx-12 max-w-[900px] w-full">
             <div>
-              {posts.map((post: any) => {
+              {posts?.map((post: any) => {
                 return (
-                  <Link key={post.id} href={`/dashboard/feed/${post.id}`}>
+                  <Link key={post.id} href={`/dashboard/feed/${post.slug}`}>
                     <div className="px-4 py-4 hover:border-2 group relative hover:border-[#00687A] transition-all duration-500 bg-white border my-4 justify-center items-center  border-[#C6C6CD] rounded-lg ">
                       <div className="flex justify-between gap-2 items-center ">
                         <div className="flex gap-2 items-center">
@@ -143,7 +143,7 @@ export default function Page() {
                         <ChevronRight />
                       </div>
                       <div className="gap-2 my-4 overflow-x-auto flex">
-                        {post.postTags.map((postTag: any) => (
+                        {post.postTags?.map((postTag: any) => (
                           <span className={`text-sm flex gap-2 md:text-lg bg-[#00687A] text-white px-3 py-1 rounded-md ${poppins2.className}`}>
                             <span>#</span> {postTag.tag.name}
                           </span>
