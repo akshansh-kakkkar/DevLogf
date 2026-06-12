@@ -112,14 +112,14 @@ export default function () {
             <div
               className={`${jetbrains.className} font-bold text-gray-500 text-xs`}
             >
-              {formatDistanceToNow(new Date(post.createdAt), {
+              {formatDistanceToNow(new Date(post.publishedAt), {
                 addSuffix: true,
               })}
             </div>
           </div>
           <div className={`${poppins.className} flex items-center gap-4 border  px-4 py-1 text-center bg-white rounded-2xl justify-between `}>
           <button onClick={handleLike}  disabled={likeLoading}>
-            <Heart  className= {` ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={32}/>
+            <Heart  className= {`cursor pointer  ${liked? "fill-red-500 text-500 stroke-red-500" : "text-gray-400"}`} size={32}/>
           </button>
           <span className="text-xl font-semibold">{likesCount}</span>
           </div>

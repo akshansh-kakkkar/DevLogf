@@ -111,7 +111,7 @@ export default function Page() {
                             <div
                               className={`${jetbrains.className} text-gray-500 text-xs`}
                             >
-                              {formatDistanceToNow(new Date(post.createdAt), {
+                              {formatDistanceToNow(new Date(post.publishedAt), {
                                 addSuffix: true,
                               })}
                             </div>
