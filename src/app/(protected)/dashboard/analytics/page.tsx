@@ -16,8 +16,8 @@ import {
 import { Geist, JetBrains_Mono, Libertinus_Sans } from "next/font/google";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Post } from "../../../Types/index";
 import { toast } from "sonner";
+import { Post } from "@/app/Types";
 const libretinusSans = Libertinus_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
