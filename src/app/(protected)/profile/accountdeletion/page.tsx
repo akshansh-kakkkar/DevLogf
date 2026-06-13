@@ -1,10 +1,10 @@
 "use client";
-import { signOut, useSession } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 import { AlertTriangleIcon, CircleCheck, Loader2 } from "lucide-react";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+
+import DeleteModal from "./modal/DeleteModal";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -17,52 +17,8 @@ export default function Page() {
   const userId = session?.user.id;
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const router = useRouter()
-  const  sendDeleteEmail = async ()=>{
-    try{
-        const response = await fetch('/api/security/deleteaccount', {
-            method :"POST",
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body : JSON.stringify({
-                email : session?.user?.email
-            })
-        })
-    }
-    catch(error){
-        toast.error("Something went wrong")
-    }
-  }
-  const deleteUser = async () => {
-    if (!userId) return;
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/users/${userId}`, {
-        method: "DELETE",
-      });
-      await signOut()
-      if (!response.ok) {
-        toast.error("Something went wrong");
-        return;
-      }
-     await sendDeleteEmail()
-      toast.success(
-        "Account Deleted Successfully. We are sad to see you go :(",
-      );
-      
-    router.refresh()
-    router.push('/')
-    } catch (error) {
-        console.error(error)
-      toast.error(
-        "Unfortunately we can't delete your account please contact us on our email Id.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const canDelete = email === session?.user?.email;
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const canDelete = email === session?.user.email; 
 
   return (
     <div className="lg:mx-22">
@@ -159,13 +115,13 @@ export default function Page() {
             />
           </div>
           <button
+          onClick={()=>setShowDeleteModal(true)}
           disabled={!canDelete}
-
-          onClick={deleteUser}
             className={`${jetbrains.className} bg-[#93000A] hover:cursor-pointer hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed my-4 px-4 text-white text-lg rounded-lg font-bold py-2`}
           >
             {isLoading ? <Loader2 size={20} className="text-[#FFFFFF] animate-spin" /> : "DELETE"}
           </button>
+          <DeleteModal onClose={()=>setShowDeleteModal(false)} open={showDeleteModal} />
         </div>
       </div>
     </div>
