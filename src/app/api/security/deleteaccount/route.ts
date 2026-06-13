@@ -11,7 +11,8 @@ export async function POST(request : Request){
             html : `
             <h2>Your account has been disabled successfully.</h2>
             <p>We are really sorry to see you go.</p>
-            <p>If this was not you please contact us on this <a href="mailto:kakkarakshansh72@gmail.com">kakkarakshansh72@gmail.com</a>
+            <p>If this was not you please contact us on this <a href="mailto:kakkarakshansh72@gmail.com">kakkarakshansh72@gmail.com</a></p>
+           <p class="text-red-500" >by the way, if you ever wish to come back you can recover this account within 30 days :)</p>
             <p>Regards,</p>
             <a href="https://github.com/akshansh-kakkkar">Akshansh</a>
             `
