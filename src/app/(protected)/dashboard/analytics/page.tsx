@@ -3,6 +3,7 @@ import {
   ChartColumn,
   ChevronLeft,
   ChevronRight,
+  CircleAlert,
   Clock,
   Eye,
   Globe,
@@ -20,6 +21,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Post } from "@/app/Types";
+import Link from "next/link";
+import DeleteModal from "./components/Modals/DeleteModal";
 const geist = Geist({
   subsets: ["latin"],
 });
@@ -88,11 +91,12 @@ export default function Page() {
   const [currentCard, setCurrentCard] = useState(0);
   const [posts, setposts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pagenation, setPagenation] = useState({
-    currentPage : 1,
-    totalPages : 1,
-    totalPosts : 0
-  })
+    currentPage: 1,
+    totalPages: 1,
+    totalPosts: 0,
+  });
   useEffect(() => {
     const getPosts = async () => {
       try {
@@ -100,7 +104,7 @@ export default function Page() {
         const res = await fetch(`/api/dashboard/posts?page=${page}&limit=5`);
         const data = await res.json();
         setposts(data.posts);
-        setPagenation(data.pagination)
+        setPagenation(data.pagination);
       } catch (error) {
         toast.error("Failed to fetch posts");
       } finally {
@@ -110,7 +114,6 @@ export default function Page() {
 
     getPosts();
   }, [page]);
-
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat("en", {
@@ -257,75 +260,121 @@ export default function Page() {
           >
             My Posts
           </div>
-          <div>
-            <div className="overflow-x-auto">
-              <div className="w-full min-w-[900px] border rounded-lg">
-                <div>
-                  <div
-                    className={`${jetbrains.className} text-center border-b text-lg divide-x divide-[#C6C6CD] rounded-t-lg font-light grid grid-cols-5 bg-[#F2F4F6] text-[#76777D]`}
-                  >
-                    <div className="col-span-1 p-4">Post Title</div>
-                    <div className="col-span-1 p-4">Status</div>
-                    <div className="col-span-1 p-4">Visibility</div>
-                    <div className="col-span-1 p-4">Created At</div>
-                    <div className="col-span-1 p-4">Actions</div>
-                  </div>
-                </div>
-                {posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className={`${geist.className} divide-x divide-[#C6C6CD] text-center  grid grid-cols-5 border-b`}
-                  >
-                    <div className="col-span-1 font-bold p-4 truncate">
-                      {post.title}
-                    </div>
+          {posts.length === 0 ? (
+            <div
+              className={`flex-col p-8 text-center mb-24 sm:mb-0 gap-2 flex justify-center items-center w-full  bg-white border rounded-lg `}
+            >
+              <div>
+                <CircleAlert
+                  size={64}
+                  className={`rounded-full p-2 text-[#00687A] bg-[#00687a21]`}
+                />
+              </div>
+              <p
+                className={`${jetbrains.className} text-xl text-center  font-semibold`}
+              >
+                You will see your posts here
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="overflow-x-auto">
+                <div className="w-full min-w-[900px] border rounded-lg">
+                  <div>
                     <div
-                      className={`  col-span-1 p-4 text-center flex justify-center items-center`}
+                      className={`${jetbrains.className} text-center border-b text-lg divide-x divide-[#C6C6CD] rounded-t-lg font-light grid grid-cols-5 bg-[#F2F4F6] text-[#76777D]`}
                     >
-                      <span className={`px-2 font-medium py-1 w-[100px] rounded-sm text-sm border-2  ${post.status === "DRAFT" ? "bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]" : post.status === "PUBLISHED" ? "bg-[#DCFCE7]  border-[#BBF7D0] text-[#15803D] " : post.status === "SCHEDULED" ? "bg-[#dbeafe] border-[#93C5FD]  text-[#1D4ED8]" : "bg-gray-100 border-gray-300 text-gray-700"}`}>
-                        {post.status}
-                      </span>
-                    </div>
-                    <div className="col-span-1 font-medium p-4 flex justify-center px-4 items-center gap-2 text-[#45464D]">
-                        <span>
-                          {post.visibility === "PUBLIC" && <div className="flex items-center gap-4"><Globe size={18} /><p>Public</p></div>}
-                          {post.visibility === "PRIVATE" && <div className="flex gap-2 items-center"><LockKeyhole size={18} /><p>Private</p></div>}
-                          {post.visibility === "UNLISTED" && <div className="flex items-center gap-2"><Link2 size={18} /><p>Unlisted</p></div>}
-                        </span>
-                    </div>
-                    <div className="col-span-1   p-4 text-center flex justify-center items-center text-[#45464D]">
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </div>
-                    <div className="col-span-1 gap-8 text-[#45464D] p-4 text-center flex justify-center items-center">
-                      <span>
-                        <ChartColumn />
-                      </span>
-                      <span>
-                        <Pencil />
-                      </span>
-                      <span>
-                        <Trash2 />
-                      </span>
+                      <div className="col-span-1 p-4">Post Title</div>
+                      <div className="col-span-1 p-4">Status</div>
+                      <div className="col-span-1 p-4">Visibility</div>
+                      <div className="col-span-1 p-4">Created At</div>
+                      <div className="col-span-1 p-4">Actions</div>
                     </div>
                   </div>
-                ))}
+                  {posts.map((post) => (
+                    <div
+                      key={post.id}
+                      className={`${geist.className}  divide-x divide-[#C6C6CD] text-center  grid grid-cols-5 border-b`}
+                    >
+                      <div className="col-span-1 font-bold p-4 truncate">
+                        {post.title}
+                      </div>
+                      <div
+                        className={`  col-span-1 p-4 text-center flex justify-center items-center`}
+                      >
+                        <span
+                          className={`px-2 font-medium py-1 w-[100px] rounded-sm text-sm border-2  ${post.status === "DRAFT" ? "bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]" : post.status === "PUBLISHED" ? "bg-[#DCFCE7]  border-[#BBF7D0] text-[#15803D] " : post.status === "SCHEDULED" ? "bg-[#dbeafe] border-[#93C5FD]  text-[#1D4ED8]" : "bg-gray-100 border-gray-300 text-gray-700"}`}
+                        >
+                          {post.status}
+                        </span>
+                      </div>
+                      <div className="col-span-1 font-medium p-4 flex justify-center px-4 items-center gap-2 text-[#45464D]">
+                        <span>
+                          {post.visibility === "PUBLIC" && (
+                            <div className="flex items-center gap-4">
+                              <Globe size={18} />
+                              <p>Public</p>
+                            </div>
+                          )}
+                          {post.visibility === "PRIVATE" && (
+                            <div className="flex gap-2 items-center">
+                              <LockKeyhole size={18} />
+                              <p>Private</p>
+                            </div>
+                          )}
+                          {post.visibility === "UNLISTED" && (
+                            <div className="flex items-center gap-2">
+                              <Link2 size={18} />
+                              <p>Unlisted</p>
+                            </div>
+                          )}
+                        </span>
+                      </div>
+                      <div className="col-span-1   p-4 text-center flex justify-center items-center text-[#45464D]">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </div>
+                      <div className="col-span-1 gap-8 text-[#45464D] p-4 text-center flex justify-center items-center">
+                        <span className="hover:bg-[#00687a21] transition-all duration-300 p-2 rounded-lg cursor-pointer">
+                          <Link href={"/id"}>
+                            <ChartColumn />
+                          </Link>
+                        </span>
+
+                        <span className="hover:bg-[#00687a21] transition-all duration-300 p-2 rounded-lg cursor-pointer">
+                          <Pencil />
+                        </span>
+                        <button type="button" onClick={()=>setShowDeleteModal(true)} className="hover:bg-[#00687a21] rounded-lg p-2 cursor-pointer transition-all duration-300">
+                          <Trash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center mt-4 justify-end gap-4">
+                <button
+                  className="cursor-pointer bg-white disabled:hover:text-[#00687A] disabled:hover:bg-white hover:bg-[#00687A] hover:text-white transition-all duration-300 border-[#00687A] disabled:cursor-not-allowed rounded-lg border text-[#00687A]"
+                  disabled={page === 1}
+                  onClick={() => setPage((prev) => prev - 1)}
+                >
+                  <ChevronLeft className="" size={32} />
+                </button>
+                <div>
+                  Page {pagenation.currentPage} of {pagenation.totalPages}
+                </div>
+                <button
+                  className="cursor-pointer disabled:hover:bg-white disabled:hover:text-[#00687A] bg-white border-[#00687A] disabled:cursor-not-allowed hover:bg-[#00687A] hover:text-white transition-all duration-300 rounded-lg border text-[#00687A]"
+                  disabled={page >= pagenation.totalPages}
+                  onClick={() => setPage((prev) => prev + 1)}
+                >
+                  <ChevronRight className="" size={32} />
+                </button>
               </div>
             </div>
-            <div className="flex items-center mt-4 justify-end gap-4">
-              <button className="cursor-pointer bg-white disabled:hover:text-[#00687A] disabled:hover:bg-white hover:bg-[#00687A] hover:text-white transition-all duration-300 border-[#00687A] disabled:cursor-not-allowed rounded-lg border text-[#00687A]" disabled={page===1} onClick={()=>setPage((prev)=>prev-1)}>
-                <ChevronLeft  className="" size={32} />
-              </button>
-              <div>Page {pagenation.currentPage} of {pagenation.totalPages}</div>
-              <button className="cursor-pointer disabled:hover:bg-white disabled:hover:text-[#00687A] bg-white border-[#00687A] disabled:cursor-not-allowed hover:bg-[#00687A] hover:text-white transition-all duration-300 rounded-lg border text-[#00687A]" disabled={page >= pagenation.totalPages} onClick={()=> setPage((prev)=> prev+1)}>
-                <ChevronRight
-                  className=""
-                  size={32}
-                />
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       )}
+      <DeleteModal isOpen={showDeleteModal} onClose={()=>{setShowDeleteModal(false)}} />
     </>
   );
 }
